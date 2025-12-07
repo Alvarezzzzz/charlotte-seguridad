@@ -9,18 +9,106 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model User {
-  email String  @unique
-  id    Int     @id @default(autoincrement())
-  name  String?
-  posts Post[]
+// Esto es tentativo y se iran anexando mas opciones de dataType segun requieran los otros modulos
+enum DataType {
+  MESERO
+  GERENTE
+  ADMIN
+  COCINA
+  DELIVERY
 }
 
-model Post {
-  authorId  Int?
-  content   String?
+enum PermissionType {
+  VISTA
+  RECURSO
+}
+
+// Esto es tentativo y se iran anexando mas opciones de resource segun requieran los otros modulos
+enum Resource {
+  PEDIDO
+  RECETA
+  PRODUCTO
+  MESA
+  MESEROS_VIEW
+}
+
+enum Method {
+  CREATE
+  READ
+  UPDATE
+  DELETE
+  VIEW
+}
+
+// --- MODELOS ---
+
+model Restaurant {
   id        Int     @id @default(autoincrement())
-  published Boolean @default(false)
-  title     String
-  author    User?   @relation(fields: [authorId], references: [id])
+
+  latitude  Decimal @db.Decimal(10, 8)
+  longitud  Decimal @db.Decimal(10, 8)
+  radius    Decimal @db.Decimal(10, 2)
+}
+
+model User {
+  id               Int       @id @default(autoincrement())
+  name           String
+  lastName         String
+  email           String    @unique
+  address        String?
+  phone         String?
+  dataType        DataType
+  password       String    // evita usar "ñ" en nombres de campos
+  birthDate       DateTime
+  dni              String   @unique
+  isAdmin        Boolean   @default(false)
+
+  // M:N con Rol (tabla intermedia implícita)
+  roles            Role[]
+
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+model Role {
+  id          Int        @id @default(autoincrement())
+  name        String      @unique
+  description String?
+  isAdmin   Boolean    @default(false)
+
+  // inversa M:N con Usuario
+  users       User[]
+
+  // 1:N con Permiso
+  permissions Permission[]
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Permission {
+  id        Int          @id @default(autoincrement())
+  name      String
+  type      PermissionType
+  resource  Resource
+  method    Method
+  isAdmin  Boolean      @default(false)
+
+  // N:1 con Role
+  roleId    Int
+  role      Role          @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  // Evita permisos duplicados por rol
+  @@unique([roleId, type, resource, method])
+}
+
+model SecurityProductExample {
+  id        Int      @id @default(autoincrement())
+  name      String
+  quantity  Int
+  price     Decimal   @db.Decimal(10, 2)
+  stock    Int
 }

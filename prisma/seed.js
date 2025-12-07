@@ -1,3 +1,5 @@
+// Esto todavia no se va a tocar
+
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
