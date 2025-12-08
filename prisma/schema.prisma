@@ -1,6 +1,7 @@
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
+  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -111,4 +112,5 @@ model SecurityProductExample {
   quantity  Int
   price     Decimal   @db.Decimal(10, 2)
   stock    Int
+  category  String
 }
