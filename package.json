@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "build": "prisma generate",
-    "dev": "PORT=3000 node src/index.js",
+    "dev": "node --watch src/index.js",
     "start": "node src/index.js"
   },
   "author": "@jess-render",
