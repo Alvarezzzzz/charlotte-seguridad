@@ -7,7 +7,7 @@ export const createRoleRouter = () => {
   
   router.post('/', roleController.createRole);
   router.get('/:id', roleController.getRoleById);
-  router.put('/:id', roleController.updateRole);
+  router.patch('/:id', roleController.updateRole);
   router.delete('/:id', roleController.deleteRole);
   router.get('/', roleController.getAllRoles);
 

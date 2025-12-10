@@ -14,11 +14,11 @@ app.use(sessionMiddleware);
 app.use(corsMiddleware());
 app.disable('x-powered-by');
 
-app.use('/api/users', createUserRouter());
-app.use('/api/roles', createRoleRouter());
-app.use('/api/permissions', createPermissionRouter());
-app.use('/api/products', createProductRouter());
+app.use('/api/seguridad/users', createUserRouter());
+app.use('/api/seguridad/roles', createRoleRouter());
+app.use('/api/seguridad/permissions', createPermissionRouter());
+app.use('/api/seguridad/products', createProductRouter());
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running in http://localhost:${PORT}`);
 });

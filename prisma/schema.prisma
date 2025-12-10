@@ -57,7 +57,7 @@ model User {
   email           String    @unique
   address        String?
   phone         String?
-  dataType        DataType
+  dataType        DataType?
   password       String    // evita usar "ñ" en nombres de campos
   birthDate       DateTime
   dni              String   @unique
