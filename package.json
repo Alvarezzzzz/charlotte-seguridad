@@ -14,10 +14,12 @@
   "dependencies": {
     "@prisma/adapter-pg": "^6.9.0",
     "@prisma/client": "6.9.0",
+    "bcrypt": "^5.1.1",
     "body-parser": "2.2.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "5.1.0",
+    "jsonwebtoken": "^9.0.2",
     "zod": "^4.1.13"
   },
   "devDependencies": {

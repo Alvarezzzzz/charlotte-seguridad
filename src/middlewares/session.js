@@ -1,5 +1,7 @@
+import { authenticateToken } from './auth.js';
+
 export function sessionMiddleware(req, res, next) {
-  console.log("Session middleware ejecutado");
-  // Aqui se extraeria el token del header Authorization que envie el frontend y se decodificaria con un secret y se guardaria la data en req.session
+  // El middleware de autenticación se aplica solo a rutas específicas
+  // Las rutas públicas (login, verify-location) no requieren autenticación
   next();
 }
