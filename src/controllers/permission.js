@@ -16,7 +16,7 @@ export class PermissionController {
 
             const { roleId, ...permissionData } = result.data; 
 
-            const newPermission = await this.permissionModel.createAndLinkToRole({ 
+            const newPermission = await this.permissionModel.create({ 
                 permissionData, 
                 roleId: Number(roleId) 
             });
@@ -24,10 +24,12 @@ export class PermissionController {
             res.status(201).json(newPermission);
         } catch (error) {
             console.error("Error creating permission:", error.message);
+            
             if (error.code === 'P2002') { 
                 
                 return res.status(409).json({ error: "Permission already exists for this resource and method" });
             }
+            console.log(error.message);
             res.status(500).json({ error: "Could not create permission or link to role" });
         }
     };

@@ -23,7 +23,6 @@ enum PermissionType {
   RECURSO
 }
 
-// Esto es tentativo y se iran anexando mas opciones de resource segun requieran los otros modulos
 enum Resource {
   PEDIDO
   RECETA
