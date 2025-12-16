@@ -1087,6 +1087,452 @@
 					"body": "{\n    \"id\": 3,\n    \"name\": \"prueba (cmbiado)\",\n    \"type\": \"RECURSO\",\n    \"resource\": \"PEDIDO\",\n    \"method\": \"CREATE\",\n    \"isAdmin\": false,\n    \"roleId\": 1,\n    \"createdAt\": \"2025-12-16T02:13:26.922Z\",\n    \"updatedAt\": \"2025-12-16T15:48:02.204Z\",\n    \"role\": {\n        \"id\": 1,\n        \"name\": \"Administrador (cambiado)\",\n        \"description\": \"Encargado de la administracion.\",\n        \"isAdmin\": true,\n        \"createdAt\": \"2025-12-15T05:15:21.513Z\",\n        \"updatedAt\": \"2025-12-16T14:40:32.083Z\"\n    }\n}"
 				}
 			]
+		},
+		{
+			"name": "Nuevo Restaurant",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"latitude\": 10.12345,\r\n\"longitud\": -67.12345,\r\n\"radius\": 5.0\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/seguridad/restaurants",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"seguridad",
+						"restaurants"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Restaurant creado",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"latitude\": 10.12345,\r\n\"longitud\": -67.12345,\r\n\"radius\": 5.0\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/seguridad/restaurants",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"seguridad",
+								"restaurants"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "66"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"42-VZHRGTEfaAPhoElMDc2AuytcqkQ\""
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 16 Dec 2025 17:20:12 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": 2,\n    \"latitude\": \"10.12345\",\n    \"longitud\": \"-67.12345\",\n    \"radius\": \"5\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Ver todos los restaurants",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"latitude\": 12.545,\r\n\"longitud\": -68.125,\r\n\"radius\": 7.0\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/seguridad/restaurants",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"seguridad",
+						"restaurants"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Todos los restaurant",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"latitude\": 12.545,\r\n\"longitud\": -68.125,\r\n\"radius\": 7.0\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/seguridad/restaurants",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"seguridad",
+								"restaurants"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "198"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"c6-cEy/mSWiQTXPw6rw7drONAJL0Es\""
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 16 Dec 2025 17:26:25 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"id\": 1,\n        \"latitude\": \"10.12345\",\n        \"longitud\": \"-67.12345\",\n        \"radius\": \"5\"\n    },\n    {\n        \"id\": 2,\n        \"latitude\": \"10.12345\",\n        \"longitud\": \"-67.12345\",\n        \"radius\": \"5\"\n    },\n    {\n        \"id\": 3,\n        \"latitude\": \"12.545\",\n        \"longitud\": \"-68.125\",\n        \"radius\": \"7\"\n    }\n]"
+				}
+			]
+		},
+		{
+			"name": "Restaurant por id",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": [
+				{
+					"name": "Restaurant id",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"latitude\": 12.545,\r\n\"longitud\": -68.125,\r\n\"radius\": 7.0\r\n}\r\n"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/seguridad/restaurants/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"seguridad",
+								"restaurants",
+								"2"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "66"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"42-VZHRGTEfaAPhoElMDc2AuytcqkQ\""
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 16 Dec 2025 17:30:41 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": 2,\n    \"latitude\": \"10.12345\",\n    \"longitud\": \"-67.12345\",\n    \"radius\": \"5\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Actualizar Restaurant",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"latitude\": 12.545,\r\n\"longitud\": -68.125,\r\n\"radius\": 9.0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/seguridad/restaurants/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"seguridad",
+						"restaurants",
+						"2"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Cambio de radio",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"latitude\": 12.545,\r\n\"longitud\": -68.125,\r\n\"radius\": 9.0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/seguridad/restaurants/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"seguridad",
+								"restaurants",
+								"2"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "62"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"3e-l09wJdlnpQ1/TGCFO1HLFFISr6k\""
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 16 Dec 2025 17:32:58 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": 2,\n    \"latitude\": \"12.545\",\n    \"longitud\": \"-68.125\",\n    \"radius\": \"9\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Eliminar restaurant",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"latitude\": 12.545,\r\n\"longitud\": -68.125,\r\n\"radius\": 9.0\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/seguridad/restaurants/4",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"seguridad",
+						"restaurants",
+						"4"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Restaurant eliminado",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"latitude\": 12.545,\r\n\"longitud\": -68.125,\r\n\"radius\": 9.0\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/seguridad/restaurants/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"seguridad",
+								"restaurants",
+								"4"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "45"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"2d-mIJ27POcbl7F1558HwKaEhvanlE\""
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 16 Dec 2025 17:34:53 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Restaurant successfully deleted\"\n}"
+				}
+			]
 		}
 	],
 	"event": [
