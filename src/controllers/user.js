@@ -39,7 +39,7 @@ export class UserController {
         return;
       }
 
-      const { password, roles, ...userData } = result.data;
+      const { password, roles, birthDate, ...userData } = result.data;
 
       // Validar contraseña
       const passwordValidation = validatePassword(password);
@@ -69,6 +69,7 @@ export class UserController {
 
       const user = await UserModel.create({
         ...userData,
+        birthDate: birthDate ? new Date(birthDate) : undefined,
         password,
         roles: roles || [],
       });
@@ -221,7 +222,7 @@ export class UserController {
         return;
       }
 
-      const { roles, ...userData } = result.data;
+      const { roles, birthDate, ...userData } = result.data;
 
       // Verificar roles si se proporcionan
       if (roles && roles.length > 0) {
@@ -241,6 +242,7 @@ export class UserController {
 
       await UserModel.update(id, {
         ...userData,
+        ...(birthDate && { birthDate: new Date(birthDate) }),
         roles: roles || undefined,
       });
 

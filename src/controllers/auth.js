@@ -164,7 +164,9 @@ export class AuthController {
       }
 
       // Obtener la configuración del restaurante
-      const restaurant = await prisma.restaurant.findFirst();
+      const restaurant = await prisma.restaurant.findFirst({
+        orderBy: { id: 'asc' },
+      });
 
       if (!restaurant) {
         res.status(400).json({
@@ -174,10 +176,22 @@ export class AuthController {
         return;
       }
 
-      // Solo verificar que el restaurante tenga coordenadas configuradas
+      const { isWithinRadius } = await import('../utils/location.js');
+      const restLat = Number(restaurant.latitude);
+      const restLon = Number(restaurant.longitud);
+      const restRadius = Number(restaurant.radius);
+
+      const is_inside = isWithinRadius(latitude, longitude, restLat, restLon, restRadius);
+
       res.json({
+        is_inside,
         latitude,
         longitude,
+        restaurant: {
+          latitude: restLat,
+          longitude: restLon,
+          radius: restRadius,
+        },
       });
     } catch (error) {
       res.status(400).json({
