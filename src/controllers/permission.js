@@ -40,20 +40,16 @@ export class PermissionController {
 
 getPermissionById = async (req, res) => {
     try {
-        let { id } = req.params; // Usamos 'let' para poder modificar 'id'
+        let { id } = req.params; 
 
-        // --- APLICACIÓN DE LA CORRECCIÓN CLAVE ---
-        // 1. Limpieza de ID: Si el ID viene como ":5" o ":14", lo convierte a "5" o "14".
         if (typeof id === 'string' && id.startsWith(':')) {
             id = id.replace(':', '');
         }
 
-        // 2. Comprobación de existencia del ID después de la limpieza
         if (!id) {
             return res.status(400).json({ error: "Missing Permission ID in URL path." });
         }
         
-        // 3. Llamada al modelo (asumiendo que tu modelo se llama 'getById' o 'findById')
         const permission = await this.permissionModel.findById({ id: Number(id) });
 
         if (!permission) {
@@ -65,7 +61,6 @@ getPermissionById = async (req, res) => {
         
     } catch (error) {
         console.error("Error getting permission by ID:", error.message);
-        // Error 500: Error interno del servidor (fallo de DB o ID=NaN)
         res.status(500).json({ error: "Could not retrieve permission" });
     }
 };
