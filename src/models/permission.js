@@ -5,16 +5,16 @@ export class PermissionModel {
 
 async create({ permissionData, roleId }) {
         const { name, type, resource, method, isAdmin = false } = permissionData;
-
+        console.log("Creating permission with data:", permissionData, "and roleId:", roleId);
         try {
             const newPermission = await prisma.permission.create({
                 data: {
                    
                     name: name,
                     isAdmin: isAdmin,
-                    type: prisma.PermissionType[type], 
-                    resource: prisma.Resource[resource], 
-                    method: prisma.Method[method], 
+                    type: type, 
+                    resource: resource, 
+                    method: method, 
                     role: {
                         connect: { id: roleId }
                     }
