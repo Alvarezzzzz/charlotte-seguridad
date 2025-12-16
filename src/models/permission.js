@@ -24,10 +24,12 @@ async create({ permissionData, roleId }) {
             return newPermission;
         } catch (error) {
             throw error;
+            console.log(error)
         }
     }
 
     async findById({ id }) {
+      console.log(id, "id rol"); 
         return await prisma.permission.findUnique({
             where: { id: Number(id) },
             include: {
@@ -39,6 +41,7 @@ async create({ permissionData, roleId }) {
   
     async update({ id, data }) {
         try {
+          console.log(id, "id permiso");
             return await prisma.permission.update({
                 where: { id: Number(id) },
                 data: data,

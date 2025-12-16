@@ -10,6 +10,7 @@ import { sessionMiddleware } from './middlewares/session.js';
 
 
 const app = express();
+app.use(express.json());
 app.use(json());
 app.use(sessionMiddleware);
 app.use(corsMiddleware());

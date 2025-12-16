@@ -25,23 +25,42 @@ export class RoleController {
         }
     };
 
-    getRoleById = async (req, res) => {
-        try {
-            const { id } = req.params;
+// RoleController.js
 
-            const role = await this.roleModel.getById({ id: Number(id) });
+getRoleById = async (req, res) => {
+    try {
+        let { id } = req.params; // Usar 'let' para poder modificar 'id'
 
-            if (!role) {
- 
-                return res.status(404).json({ error: "Role not found" });
-            }
-
-            res.json(role);
-        } catch (error) {
-            console.error("Error getting role by ID:", error.message);
-            res.status(500).json({ error: "Could not retrieve role" });
+        // --- CORRECCIÓN CLAVE ---
+        // 1. Limpieza de ID para evitar NaN si la URL es /:5
+        if (typeof id === 'string' && id.startsWith(':')) {
+            id = id.replace(':', '');
         }
-    };
+
+        console.log(id, "id rol controller limpio"); // <-- Verifica que SÓLO muestre '5' (como string)
+        
+        // 2. Comprobación obligatoria
+        if (!id) {
+            return res.status(400).json({ error: "Missing Role ID in URL path." });
+        }
+        
+        // 3. Llamada al modelo (nota: tu función en el modelo se llama findById, no getById)
+        // Asegúrate que en el controlador la llamas con el nombre correcto:
+        const role = await this.roleModel.findById({ id: Number(id) }); 
+        
+        if (!role) {
+            // Si Prisma devuelve null (no encontrado)
+            return res.status(404).json({ error: "Role not found" });
+        }
+
+        res.json(role);
+        
+    } catch (error) {
+        // ... (Tu manejo de error 500)
+        console.error("Error getting role by ID:", error.message);
+        res.status(500).json({ error: "Could not retrieve role" });
+    }
+};
 
     updateRole = async (req, res) => {
         try {

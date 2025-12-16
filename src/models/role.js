@@ -7,26 +7,28 @@ export class RoleModel {
         });
     }
 
-    async findById ({ id }) {
-   
+    async findById ({ id }) { 
         return await prisma.role.findUnique({
-            where: { id: Number(id) },
-
+            where: { id: Number(id)  },    
             include: {
                 permissions: true,
                 users: true,
             },
+
         });
     }
 
     async update ({ id, data }) {
+         console.log(id, "id rol");
         return await prisma.role.update({
+            
             where: { id: Number(id) },
             data: data,
             include: {
                 permissions: true,
                 users: true,
             },
+           
         });
     }
 

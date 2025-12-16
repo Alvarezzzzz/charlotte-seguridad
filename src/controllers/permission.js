@@ -9,11 +9,13 @@ export class PermissionController {
     createPermission = async (req, res) => {
         try {
             const result = validatePermission(req.body);
+            console.log(req.body, "create");
 
             if (!result.success) {
                 return res.status(400).json({ error: JSON.parse(result.error.message) });
+         
             }
-            console.log("Validated permission data:", result.data);
+            console.log( result.error.message);
             const { roleId, ...permissionData } = result.data; 
 
             const newPermission = await this.permissionModel.create({ 
@@ -34,22 +36,39 @@ export class PermissionController {
         }
     };
 
-    getPermissionById = async (req, res) => {
-        try {
-            const { id } = req.params;
+   // PermissionController.js
 
-            const permission = await this.permissionModel.getById({ id: Number(id) });
+getPermissionById = async (req, res) => {
+    try {
+        let { id } = req.params; // Usamos 'let' para poder modificar 'id'
 
-            if (!permission) {
-                return res.status(404).json({ error: "Permission not found" });
-            }
-
-            res.json(permission);
-        } catch (error) {
-            console.error("Error getting permission by ID:", error.message);
-            res.status(500).json({ error: "Could not retrieve permission" });
+        // --- APLICACIÓN DE LA CORRECCIÓN CLAVE ---
+        // 1. Limpieza de ID: Si el ID viene como ":5" o ":14", lo convierte a "5" o "14".
+        if (typeof id === 'string' && id.startsWith(':')) {
+            id = id.replace(':', '');
         }
-    };
+
+        // 2. Comprobación de existencia del ID después de la limpieza
+        if (!id) {
+            return res.status(400).json({ error: "Missing Permission ID in URL path." });
+        }
+        
+        // 3. Llamada al modelo (asumiendo que tu modelo se llama 'getById' o 'findById')
+        const permission = await this.permissionModel.findById({ id: Number(id) });
+
+        if (!permission) {
+            // Si Prisma devuelve null (no encontrado)
+            return res.status(404).json({ error: "Permission not found" });
+        }
+
+        res.json(permission);
+        
+    } catch (error) {
+        console.error("Error getting permission by ID:", error.message);
+        // Error 500: Error interno del servidor (fallo de DB o ID=NaN)
+        res.status(500).json({ error: "Could not retrieve permission" });
+    }
+};
 
     updatePermission = async (req, res) => {
         try {
@@ -65,9 +84,10 @@ export class PermissionController {
                 id: Number(id), 
                 data: result.data 
             });
-
+            console.log(updatedPermission)
             if (!updatedPermission) {
                 return res.status(404).json({ error: "Permission not found" });
+                
             }
 
             res.json(updatedPermission);
