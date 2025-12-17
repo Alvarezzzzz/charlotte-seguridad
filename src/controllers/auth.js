@@ -221,15 +221,50 @@ export class AuthController {
         return;
       }
 
-      // Verificar permisos
-      const hasPermission =
-        req.user.isAdmin ||
-        (await UserModel.checkUserPermission(req.user.id, 'User', 'UPDATE'));
+      // Verificar permisos según especificaciones:
+      // - isAdmin: true, O
+      // - type: "RESOURCE", resource: "User_seguridad", method: "UPDATE" o "ALL"
+      let hasPermission = false;
+
+      if (req.user.isAdmin) {
+        hasPermission = true;
+      } else {
+        // Obtener roles del usuario desde la BD
+        const user = await prisma.user.findUnique({
+          where: { id: req.user.id },
+          include: {
+            roles: {
+              include: {
+                permissions: true,
+              },
+            },
+          },
+        });
+
+        if (user) {
+          // Iterar sobre los permisos de todos los roles del usuario
+          for (const role of user.roles) {
+            for (const permission of role.permissions) {
+              // Verificar según especificaciones: type="RESOURCE", resource="User_seguridad", method="UPDATE" o "ALL"
+              // Nota: También aceptamos "RECURSO" por compatibilidad con la BD actual
+              const isValidType = permission.type === 'RESOURCE' || permission.type === 'RECURSO';
+              const isValidResource = permission.resource === 'User_seguridad' || String(permission.resource) === 'User_seguridad';
+              const isValidMethod = permission.method === 'UPDATE' || permission.method === 'ALL';
+
+              if (isValidType && isValidResource && isValidMethod) {
+                hasPermission = true;
+                break;
+              }
+            }
+            if (hasPermission) break;
+          }
+        }
+      }
 
       if (!hasPermission) {
         res.status(403).json({
           success: false,
-          message: 'No tiene permisos para cambiar contraseñas de otros usuarios',
+          message: 'No tiene permisos para realizar esta acción',
         });
         return;
       }
@@ -287,12 +322,18 @@ export class AuthController {
         return;
       }
 
-      // Verificar contraseña actual
-      const isCurrentPasswordValid = await UserModel.verifyPassword(
-        req.user.id,
-        current_password
-      );
+      // Verificar token de sesión válido y consultar información del usuario en BD
+      const user = await UserModel.findById(req.user.id);
+      if (!user) {
+        res.status(404).json({
+          success: false,
+          message: 'Usuario no encontrado',
+        });
+        return;
+      }
 
+      // Verificar que la contraseña actual coincida con la del body
+      const isCurrentPasswordValid = await comparePassword(current_password, user.password);
       if (!isCurrentPasswordValid) {
         res.status(400).json({
           success: false,
@@ -301,7 +342,7 @@ export class AuthController {
         return;
       }
 
-      // Validar nueva contraseña
+      // Verificar que la nueva contraseña sea correcta
       const passwordValidation = validatePassword(new_password);
       if (!passwordValidation.valid) {
         res.status(400).json({

@@ -1773,6 +1773,120 @@
         }
       },
       "response": []
+    },
+    {
+      "name": "Cambiar Contraseña (Admin)",
+      "id": "password-change-admin-endpoint",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Verificar respuesta exitosa",
+              "pm.test(\"Cambio de contraseña exitoso (200 OK)\", function () {",
+              " pm.response.to.have.status(200);",
+              "});",
+              "",
+              "// Verificar formato de respuesta",
+              "pm.test(\"Respuesta tiene el formato correcto\", function () {",
+              " var jsonData = pm.response.json();",
+              " pm.expect(jsonData).to.have.property(\"message\");",
+              " pm.expect(jsonData.message).to.eql(\"Cambio de contraseña ejecutado exitosamente\");",
+              "});",
+              "",
+              "console.log(\"Respuesta:\", pm.response.json());"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"user_id\": 1,\n  \"new_password\": \"nuevacontraseñasupersecreta\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url_auth}}/api/seguridad/auth/passwordChange/admin",
+          "host": ["{{url_auth}}"],
+          "path": ["api", "seguridad", "auth", "passwordChange", "admin"]
+        },
+        "description": "Endpoint para cambiar la contraseña de cualquier usuario. Requiere permisos de admin o permiso User_seguridad UPDATE."
+      },
+      "response": []
+    },
+    {
+      "name": "Cambiar Contraseña (Propio)",
+      "id": "password-change-own-endpoint",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Verificar respuesta exitosa",
+              "pm.test(\"Cambio de contraseña exitoso (200 OK)\", function () {",
+              " pm.response.to.have.status(200);",
+              "});",
+              "",
+              "// Verificar formato de respuesta",
+              "pm.test(\"Respuesta tiene el formato correcto\", function () {",
+              " var jsonData = pm.response.json();",
+              " pm.expect(jsonData).to.have.property(\"message\");",
+              " pm.expect(jsonData.message).to.eql(\"Cambio de contraseña ejecutado exitosamente\");",
+              "});",
+              "",
+              "console.log(\"Respuesta:\", pm.response.json());"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"current_password\": \"micontraseñaactual\",\n  \"new_password\": \"nuevacontraseñasupersecreta\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url_auth}}/api/seguridad/auth/passwordChange",
+          "host": ["{{url_auth}}"],
+          "path": ["api", "seguridad", "auth", "passwordChange"]
+        },
+        "description": "Endpoint para que un usuario cambie su propia contraseña."
+      },
+      "response": []
     }
   ],
   "event": [
