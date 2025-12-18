@@ -114,4 +114,91 @@ getRestaurantById = async (req, res) => {
             res.status(500).json({ error: "Could not retrieve restaurants" });
         }
     };
+
+    // Endpoint 3: Actualizar coordenadas del restaurante (sin ID en ruta)
+    updateRestaurantCoordinates = async (req, res) => {
+        try {
+            // Verificar autenticación
+            if (!req.user) {
+                return res.status(401).json({
+                    success: false,
+                    message: 'Token de autenticación requerido',
+                });
+            }
+
+            // Verificar permisos
+            const { prisma } = await import('../db/client.js');
+            const user = await prisma.user.findUnique({
+                where: { id: req.user.id },
+                include: {
+                    roles: {
+                        include: {
+                            permissions: true,
+                        },
+                    },
+                },
+            });
+
+            if (!user) {
+                return res.status(401).json({
+                    success: false,
+                    message: 'Usuario no encontrado',
+                });
+            }
+
+            // Verificar si tiene permisos o es admin
+            const hasPermission = user.isAdmin || user.roles.some(role => 
+                role.permissions.some(perm => 
+                    perm.type === 'RECURSO' && 
+                    perm.resource === 'Restaurant_seguridad' && 
+                    (perm.method === 'UPDATE' || perm.method === 'ALL')
+                )
+            );
+
+            if (!hasPermission) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'No tiene permisos para actualizar las coordenadas del restaurante',
+                });
+            }
+
+            // Validar body
+            const result = validatePartialRestaurantGeo(req.body);
+
+            if (!result.success) {
+                return res.status(400).json({ 
+                    success: false,
+                    message: 'Datos inválidos para la actualización del restaurante',
+                    errors: JSON.parse(result.error.message) 
+                });
+            }
+
+            // Verificar que ya se haya configurado el restaurante (debe existir la instancia)
+            const restaurants = await this.restaurantModel.getAll();
+            
+            if (!restaurants || restaurants.length === 0) {
+                return res.status(422).json({
+                    success: false,
+                    message: 'Debe configurar las coordenadas del restaurante primero',
+                });
+            }
+
+            // Actualizar la primera (y única) instancia
+            const restaurantId = restaurants[0].id;
+            await this.restaurantModel.update({ 
+                id: restaurantId, 
+                data: result.data 
+            });
+
+            res.json({
+                message: 'Coordenadas actualizadas correctamente',
+            });
+        } catch (error) {
+            console.error("Error updating restaurant coordinates:", error.message);
+            res.status(500).json({ 
+                success: false,
+                message: 'Error al actualizar las coordenadas del restaurante' 
+            });
+        }
+    };
 }

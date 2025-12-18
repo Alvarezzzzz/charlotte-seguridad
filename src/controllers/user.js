@@ -391,4 +391,108 @@ export class UserController {
       });
     }
   };
+
+  // Endpoint 6: Actualizar datos de usuario por token de sesión
+  updateUserByToken = async (req, res) => {
+    try {
+      // Verificar autenticación
+      if (!req.user) {
+        res.status(401).json({
+          success: false,
+          message: 'Token de autenticación requerido',
+        });
+        return;
+      }
+
+      // Validar datos del body
+      const result = validatePartialUser(req.body);
+
+      if (!result.success) {
+        res.status(400).json({
+          success: false,
+          message: 'Datos inválidos para la actualización del usuario',
+          errors: result.error.errors,
+        });
+        return;
+      }
+
+      // Verificar que el usuario existe
+      const existingUser = await UserModel.findById(req.user.id);
+      if (!existingUser) {
+        res.status(404).json({
+          success: false,
+          message: 'Usuario no encontrado',
+        });
+        return;
+      }
+
+      const { roles, birthDate, password, ...userData } = result.data;
+
+      // No permitir cambio de contraseña por este endpoint
+      if (password) {
+        res.status(400).json({
+          success: false,
+          message: 'No se puede cambiar la contraseña por este endpoint',
+        });
+        return;
+      }
+
+      // Verificar roles si se proporcionan
+      if (roles && roles.length > 0) {
+        const { prisma } = await import('../db/client.js');
+        const existingRoles = await prisma.role.findMany({
+          where: { id: { in: roles } },
+        });
+
+        if (existingRoles.length !== roles.length) {
+          res.status(400).json({
+            success: false,
+            message: 'Uno o más roles no existen',
+          });
+          return;
+        }
+      }
+
+      // Actualizar el usuario
+      const updatedUser = await UserModel.update(req.user.id, {
+        ...userData,
+        ...(birthDate && { birthDate: new Date(birthDate) }),
+        roles: roles || undefined,
+      });
+
+      // Generar nuevo token con los datos actualizados
+      const { generateToken } = await import('../utils/jwt.js');
+      const newToken = generateToken({
+        id: updatedUser.id,
+        name: updatedUser.name,
+        lastName: updatedUser.lastName,
+        email: updatedUser.email,
+        address: updatedUser.address,
+        phone: updatedUser.phone,
+        dataType: updatedUser.dataType,
+        birthDate: updatedUser.birthDate.toISOString().split('T')[0],
+        dni: updatedUser.dni,
+        isAdmin: updatedUser.isAdmin,
+        roles: updatedUser.roles.map((role) => role.id),
+      });
+
+      res.json({
+        message: 'Usuario actualizado exitosamente',
+        user_id: updatedUser.id,
+        token: newToken,
+      });
+    } catch (error) {
+      if (error.code === 'P2002') {
+        res.status(400).json({
+          success: false,
+          message: 'El email o DNI ya está registrado',
+        });
+        return;
+      }
+      res.status(400).json({
+        success: false,
+        message: error.message || 'Error al actualizar usuario',
+      });
+    }
+  };
 }
