@@ -364,6 +364,72 @@ export class AuthController {
       });
     }
   }
+
+  async clientSession(req, res) {
+    try {
+      const { table_id, customer_name, customer_dni } = req.body;
+
+      // Validar presencia de campos
+      if (
+        table_id === undefined ||
+        customer_name === undefined ||
+        customer_dni === undefined
+      ) {
+        res.status(400).json({
+          success: false,
+          message: 'table_id, customer_name y customer_dni son requeridos',
+        });
+        return;
+      }
+
+      // Validar table_id numérico y positivo
+      const tableIdNumber = Number(table_id);
+      if (!Number.isInteger(tableIdNumber) || tableIdNumber <= 0) {
+        res.status(400).json({
+          success: false,
+          message: 'table_id debe ser un número entero positivo',
+        });
+        return;
+      }
+
+      // Validar nombre no vacío
+      const normalizedName = String(customer_name).trim();
+      if (!normalizedName) {
+        res.status(400).json({
+          success: false,
+          message: 'customer_name no puede estar vacío',
+        });
+        return;
+      }
+
+      // Validar cédula (prefijo opcional V/E/J/P y 5-15 dígitos)
+      const normalizedDni = String(customer_dni).trim();
+      const dniRegex = /^(?:[VEJP]-?)?\d{5,15}$/i;
+      if (!dniRegex.test(normalizedDni)) {
+        res.status(400).json({
+          success: false,
+          message:
+            'customer_dni debe ser una cédula válida (prefijo opcional V/E/J/P y solo dígitos)',
+        });
+        return;
+      }
+
+      const tokenPayload = {
+        table_id: tableIdNumber,
+        customer_name: normalizedName,
+        customer_dni: normalizedDni.toUpperCase(),
+      };
+
+      const token = generateToken(tokenPayload);
+
+      res.json({ token });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message || 'Error al generar sesión de cliente',
+      });
+    }
+  }
 }
 
 

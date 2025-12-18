@@ -1887,6 +1887,65 @@
         "description": "Endpoint para que un usuario cambie su propia contraseña."
       },
       "response": []
+    },
+    {
+      "name": "Client Session (JWT temporal cliente)",
+      "id": "client-session-endpoint",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Verificar respuesta exitosa",
+              "pm.test(\"Token generado (200 OK)\", function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "// Verificar formato de respuesta",
+              "pm.test(\"Respuesta incluye token\", function () {",
+              "  var jsonData = pm.response.json();",
+              "  pm.expect(jsonData).to.have.property(\"token\");",
+              "  pm.environment.set(\"client_session_token\", jsonData.token);",
+              "});",
+              "",
+              "console.log(\"Token de sesión de cliente:\", pm.response.json());"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"table_id\": 10,\n  \"customer_name\": \"Juan\",\n  \"customer_dni\": \"12345678\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url_auth}}/api/seguridad/auth/clientSession",
+          "host": [
+            "{{url_auth}}"
+          ],
+          "path": [
+            "api",
+            "seguridad",
+            "auth",
+            "clientSession"
+          ]
+        },
+        "description": "Endpoint para firmar la data temporal de ClienteTemporal (ATC) y devolver un JWT con table_id, customer_name y customer_dni."
+      },
+      "response": []
     }
   ],
   "event": [

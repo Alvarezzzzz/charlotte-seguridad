@@ -29,6 +29,9 @@ export const createAuthRouter = () => {
     authController.changePassword.bind(authController)
   );
 
+  // POST /api/seguridad/auth/clientSession
+  router.post('/clientSession', authController.clientSession.bind(authController));
+
   return router;
 };
 
