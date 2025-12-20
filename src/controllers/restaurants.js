@@ -157,9 +157,9 @@ export class RestaurantController {
         user.roles.some((role) =>
           role.permissions.some(
             (perm) =>
-              perm.type === "RESOURCE" &&
+              perm.type === "Resource" &&
               perm.resource === "Restaurant_seguridad" &&
-              (perm.method === "UPDATE" || perm.method === "ALL")
+              (perm.method === "Update" || perm.method === "All")
           )
         );
 

@@ -25,9 +25,9 @@ export class AuthController {
         });
         return;
       }
-      console.log(user, "user");
+
       const isPasswordValid = await comparePassword(password, user.password);
-      console.log(isPasswordValid, "isPasswordValid");
+
       if (!isPasswordValid) {
         res.status(401).json({
           success: false,
@@ -255,13 +255,12 @@ export class AuthController {
             for (const permission of role.permissions) {
               // Verificar según especificaciones: type="RESOURCE", resource="User_seguridad", method="UPDATE" o "ALL"
               // Nota: También aceptamos "RECURSO" por compatibilidad con la BD actual
-              const isValidType =
-                permission.type === "RESOURCE" || permission.type === "RECURSO";
+              const isValidType = permission.type === "Resource";
               const isValidResource =
                 permission.resource === "User_seguridad" ||
                 String(permission.resource) === "User_seguridad";
               const isValidMethod =
-                permission.method === "UPDATE" || permission.method === "ALL";
+                permission.method === "Update" || permission.method === "All";
 
               if (isValidType && isValidResource && isValidMethod) {
                 hasPermission = true;

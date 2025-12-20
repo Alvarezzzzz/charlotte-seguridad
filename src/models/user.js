@@ -135,9 +135,9 @@ export class UserModel {
     for (const role of user.roles) {
       for (const permission of role.permissions) {
         if (
-          permission.type === "RESOURCE" &&
+          permission.type === "Resource" &&
           permission.resource === resource &&
-          (permission.method === method || permission.method === "ALL")
+          (permission.method === method || permission.method === "All")
         ) {
           return true;
         }

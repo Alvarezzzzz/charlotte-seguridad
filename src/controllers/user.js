@@ -21,7 +21,7 @@ export class UserController {
         (await UserModel.checkUserPermission(
           req.user.id,
           "User_seguridad",
-          "CREATE"
+          "Create"
         ));
 
       if (!hasPermission) {
@@ -114,7 +114,7 @@ export class UserController {
         (await UserModel.checkUserPermission(
           req.user.id,
           "User_seguridad",
-          "READ"
+          "Read"
         ));
 
       if (!hasPermission) {
@@ -193,7 +193,7 @@ export class UserController {
         (await UserModel.checkUserPermission(
           req.user.id,
           "User_seguridad",
-          "UPDATE"
+          "Update"
         ));
 
       if (!hasPermission) {
@@ -294,7 +294,7 @@ export class UserController {
         (await UserModel.checkUserPermission(
           req.user.id,
           "User_seguridad",
-          "DELETE"
+          "Delete"
         ));
 
       if (!hasPermission) {
@@ -363,7 +363,7 @@ export class UserController {
         (await UserModel.checkUserPermission(
           req.user.id,
           "User_seguridad",
-          "READ"
+          "Read"
         ));
 
       if (!hasPermission) {
