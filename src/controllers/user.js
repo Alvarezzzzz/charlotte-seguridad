@@ -1,6 +1,6 @@
 import { validateUser, validatePartialUser } from "../schemas/user.js";
 import { UserModel } from "../models/user.js";
-import { validatePassword } from '../utils/password.js';
+import { validatePassword } from "../utils/password.js";
 
 export class UserController {
   constructor() {}
@@ -10,7 +10,7 @@ export class UserController {
       if (!req.user) {
         res.status(401).json({
           success: false,
-          message: 'Usuario no autenticado',
+          message: "Usuario no autenticado",
         });
         return;
       }
@@ -18,12 +18,16 @@ export class UserController {
       // Verificar permisos
       const hasPermission =
         req.user.isAdmin ||
-        (await UserModel.checkUserPermission(req.user.id, 'User', 'CREATE'));
+        (await UserModel.checkUserPermission(
+          req.user.id,
+          "User_seguridad",
+          "CREATE"
+        ));
 
       if (!hasPermission) {
         res.status(403).json({
           success: false,
-          message: 'No tiene permisos para crear usuarios',
+          message: "No tiene permisos para crear usuarios",
         });
         return;
       }
@@ -33,7 +37,7 @@ export class UserController {
       if (!result.success) {
         res.status(400).json({
           success: false,
-          message: 'Datos inválidos',
+          message: "Datos inválidos",
           errors: result.error.errors,
         });
         return;
@@ -53,7 +57,7 @@ export class UserController {
 
       // Verificar roles si se proporcionan
       if (roles && roles.length > 0) {
-        const { prisma } = await import('../db/client.js');
+        const { prisma } = await import("../db/client.js");
         const existingRoles = await prisma.role.findMany({
           where: { id: { in: roles } },
         });
@@ -61,7 +65,7 @@ export class UserController {
         if (existingRoles.length !== roles.length) {
           res.status(400).json({
             success: false,
-            message: 'Uno o más roles no existen',
+            message: "Uno o más roles no existen",
           });
           return;
         }
@@ -75,20 +79,21 @@ export class UserController {
       });
 
       res.status(201).json({
-        message: 'Usuario creado exitosamente',
+        message: "Usuario creado exitosamente",
         user_id: user.id,
       });
     } catch (error) {
-      if (error.code === 'P2002') {
+      console.error(error);
+      if (error.code === "P2002") {
         res.status(400).json({
           success: false,
-          message: 'El email o DNI ya está registrado',
+          message: "El email o DNI ya está registrado",
         });
         return;
       }
       res.status(400).json({
         success: false,
-        message: error.message || 'Error al crear usuario',
+        message: error.message || "Error al crear usuario",
       });
     }
   };
@@ -98,7 +103,7 @@ export class UserController {
       if (!req.user) {
         res.status(401).json({
           success: false,
-          message: 'Usuario no autenticado',
+          message: "Usuario no autenticado",
         });
         return;
       }
@@ -106,12 +111,16 @@ export class UserController {
       // Verificar permisos
       const hasPermission =
         req.user.isAdmin ||
-        (await UserModel.checkUserPermission(req.user.id, 'User', 'READ'));
+        (await UserModel.checkUserPermission(
+          req.user.id,
+          "User_seguridad",
+          "READ"
+        ));
 
       if (!hasPermission) {
         res.status(403).json({
           success: false,
-          message: 'No tiene permisos para ver usuarios',
+          message: "No tiene permisos para ver usuarios",
         });
         return;
       }
@@ -121,7 +130,7 @@ export class UserController {
       if (isNaN(id)) {
         res.status(400).json({
           success: false,
-          message: 'ID inválido',
+          message: "ID inválido",
         });
         return;
       }
@@ -131,7 +140,7 @@ export class UserController {
       if (!user) {
         res.status(404).json({
           success: false,
-          message: 'Usuario no encontrado',
+          message: "Usuario no encontrado",
         });
         return;
       }
@@ -143,7 +152,7 @@ export class UserController {
         address: user.address,
         phone: user.phone,
         dataType: user.dataType,
-        birthDate: user.birthDate.toISOString().split('T')[0],
+        birthDate: user.birthDate.toISOString().split("T")[0],
         dni: user.dni,
         roles: user.roles.map((role) => ({
           id: role.id,
@@ -163,7 +172,7 @@ export class UserController {
     } catch (error) {
       res.status(500).json({
         success: false,
-        message: error.message || 'Error al obtener usuario',
+        message: error.message || "Error al obtener usuario",
       });
     }
   };
@@ -173,7 +182,7 @@ export class UserController {
       if (!req.user) {
         res.status(401).json({
           success: false,
-          message: 'Usuario no autenticado',
+          message: "Usuario no autenticado",
         });
         return;
       }
@@ -181,12 +190,16 @@ export class UserController {
       // Verificar permisos
       const hasPermission =
         req.user.isAdmin ||
-        (await UserModel.checkUserPermission(req.user.id, 'User', 'UPDATE'));
+        (await UserModel.checkUserPermission(
+          req.user.id,
+          "User_seguridad",
+          "UPDATE"
+        ));
 
       if (!hasPermission) {
         res.status(403).json({
           success: false,
-          message: 'No tiene permisos para actualizar usuarios',
+          message: "No tiene permisos para actualizar usuarios",
         });
         return;
       }
@@ -196,7 +209,7 @@ export class UserController {
       if (isNaN(id)) {
         res.status(400).json({
           success: false,
-          message: 'ID inválido',
+          message: "ID inválido",
         });
         return;
       }
@@ -206,7 +219,7 @@ export class UserController {
       if (!result.success) {
         res.status(400).json({
           success: false,
-          message: 'Datos inválidos',
+          message: "Datos inválidos",
           errors: result.error.errors,
         });
         return;
@@ -217,7 +230,7 @@ export class UserController {
       if (!existingUser) {
         res.status(404).json({
           success: false,
-          message: 'Usuario no encontrado',
+          message: "Usuario no encontrado",
         });
         return;
       }
@@ -226,7 +239,7 @@ export class UserController {
 
       // Verificar roles si se proporcionan
       if (roles && roles.length > 0) {
-        const { prisma } = await import('../db/client.js');
+        const { prisma } = await import("../db/client.js");
         const existingRoles = await prisma.role.findMany({
           where: { id: { in: roles } },
         });
@@ -234,7 +247,7 @@ export class UserController {
         if (existingRoles.length !== roles.length) {
           res.status(400).json({
             success: false,
-            message: 'Uno o más roles no existen',
+            message: "Uno o más roles no existen",
           });
           return;
         }
@@ -247,20 +260,20 @@ export class UserController {
       });
 
       res.json({
-        message: 'Usuario actualizado exitosamente',
+        message: "Usuario actualizado exitosamente",
         user_id: id,
       });
     } catch (error) {
-      if (error.code === 'P2002') {
+      if (error.code === "P2002") {
         res.status(400).json({
           success: false,
-          message: 'El email o DNI ya está registrado',
+          message: "El email o DNI ya está registrado",
         });
         return;
       }
       res.status(400).json({
         success: false,
-        message: error.message || 'Error al actualizar usuario',
+        message: error.message || "Error al actualizar usuario",
       });
     }
   };
@@ -270,7 +283,7 @@ export class UserController {
       if (!req.user) {
         res.status(401).json({
           success: false,
-          message: 'Usuario no autenticado',
+          message: "Usuario no autenticado",
         });
         return;
       }
@@ -278,12 +291,16 @@ export class UserController {
       // Verificar permisos
       const hasPermission =
         req.user.isAdmin ||
-        (await UserModel.checkUserPermission(req.user.id, 'User', 'DELETE'));
+        (await UserModel.checkUserPermission(
+          req.user.id,
+          "User_seguridad",
+          "DELETE"
+        ));
 
       if (!hasPermission) {
         res.status(403).json({
           success: false,
-          message: 'No tiene permisos para eliminar usuarios',
+          message: "No tiene permisos para eliminar usuarios",
         });
         return;
       }
@@ -293,7 +310,7 @@ export class UserController {
       if (isNaN(id)) {
         res.status(400).json({
           success: false,
-          message: 'ID inválido',
+          message: "ID inválido",
         });
         return;
       }
@@ -303,7 +320,7 @@ export class UserController {
       if (!user) {
         res.status(404).json({
           success: false,
-          message: 'Usuario no encontrado',
+          message: "Usuario no encontrado",
         });
         return;
       }
@@ -312,7 +329,7 @@ export class UserController {
       if (user.isAdmin) {
         res.status(403).json({
           success: false,
-          message: 'No se puede eliminar el usuario administrador',
+          message: "No se puede eliminar el usuario administrador",
         });
         return;
       }
@@ -320,12 +337,12 @@ export class UserController {
       await UserModel.delete(id);
 
       res.json({
-        message: 'Usuario Eliminado exitosamente',
+        message: "Usuario Eliminado exitosamente",
       });
     } catch (error) {
       res.status(400).json({
         success: false,
-        message: error.message || 'Error al eliminar usuario',
+        message: error.message || "Error al eliminar usuario",
       });
     }
   };
@@ -335,7 +352,7 @@ export class UserController {
       if (!req.user) {
         res.status(401).json({
           success: false,
-          message: 'Usuario no autenticado',
+          message: "Usuario no autenticado",
         });
         return;
       }
@@ -343,12 +360,16 @@ export class UserController {
       // Verificar permisos
       const hasPermission =
         req.user.isAdmin ||
-        (await UserModel.checkUserPermission(req.user.id, 'User', 'READ'));
+        (await UserModel.checkUserPermission(
+          req.user.id,
+          "User_seguridad",
+          "READ"
+        ));
 
       if (!hasPermission) {
         res.status(403).json({
           success: false,
-          message: 'No tiene permisos para ver usuarios',
+          message: "No tiene permisos para ver usuarios",
         });
         return;
       }
@@ -364,7 +385,7 @@ export class UserController {
         address: user.address,
         phone: user.phone,
         dataType: user.dataType,
-        birthDate: user.birthDate.toISOString().split('T')[0],
+        birthDate: user.birthDate.toISOString().split("T")[0],
         dni: user.dni,
         isAdmin: user.isAdmin,
         roles: user.roles.map((role) => ({
@@ -387,7 +408,7 @@ export class UserController {
     } catch (error) {
       res.status(500).json({
         success: false,
-        message: error.message || 'Error al obtener usuarios',
+        message: error.message || "Error al obtener usuarios",
       });
     }
   };
@@ -399,7 +420,7 @@ export class UserController {
       if (!req.user) {
         res.status(401).json({
           success: false,
-          message: 'Token de autenticación requerido',
+          message: "Token de autenticación requerido",
         });
         return;
       }
@@ -410,7 +431,7 @@ export class UserController {
       if (!result.success) {
         res.status(400).json({
           success: false,
-          message: 'Datos inválidos para la actualización del usuario',
+          message: "Datos inválidos para la actualización del usuario",
           errors: result.error.errors,
         });
         return;
@@ -421,7 +442,7 @@ export class UserController {
       if (!existingUser) {
         res.status(404).json({
           success: false,
-          message: 'Usuario no encontrado',
+          message: "Usuario no encontrado",
         });
         return;
       }
@@ -432,14 +453,14 @@ export class UserController {
       if (password) {
         res.status(400).json({
           success: false,
-          message: 'No se puede cambiar la contraseña por este endpoint',
+          message: "No se puede cambiar la contraseña por este endpoint",
         });
         return;
       }
 
       // Verificar roles si se proporcionan
       if (roles && roles.length > 0) {
-        const { prisma } = await import('../db/client.js');
+        const { prisma } = await import("../db/client.js");
         const existingRoles = await prisma.role.findMany({
           where: { id: { in: roles } },
         });
@@ -447,7 +468,7 @@ export class UserController {
         if (existingRoles.length !== roles.length) {
           res.status(400).json({
             success: false,
-            message: 'Uno o más roles no existen',
+            message: "Uno o más roles no existen",
           });
           return;
         }
@@ -461,7 +482,7 @@ export class UserController {
       });
 
       // Generar nuevo token con los datos actualizados
-      const { generateToken } = await import('../utils/jwt.js');
+      const { generateToken } = await import("../utils/jwt.js");
       const newToken = generateToken({
         id: updatedUser.id,
         name: updatedUser.name,
@@ -470,28 +491,28 @@ export class UserController {
         address: updatedUser.address,
         phone: updatedUser.phone,
         dataType: updatedUser.dataType,
-        birthDate: updatedUser.birthDate.toISOString().split('T')[0],
+        birthDate: updatedUser.birthDate.toISOString().split("T")[0],
         dni: updatedUser.dni,
         isAdmin: updatedUser.isAdmin,
         roles: updatedUser.roles.map((role) => role.id),
       });
 
       res.json({
-        message: 'Usuario actualizado exitosamente',
+        message: "Usuario actualizado exitosamente",
         user_id: updatedUser.id,
         token: newToken,
       });
     } catch (error) {
-      if (error.code === 'P2002') {
+      if (error.code === "P2002") {
         res.status(400).json({
           success: false,
-          message: 'El email o DNI ya está registrado',
+          message: "El email o DNI ya está registrado",
         });
         return;
       }
       res.status(400).json({
         success: false,
-        message: error.message || 'Error al actualizar usuario',
+        message: error.message || "Error al actualizar usuario",
       });
     }
   };

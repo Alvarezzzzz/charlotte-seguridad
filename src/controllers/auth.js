@@ -1,7 +1,7 @@
-import { UserModel } from '../models/user.js';
-import { generateToken } from '../utils/jwt.js';
-import { comparePassword, validatePassword } from '../utils/password.js';
-import { prisma } from '../db/client.js';
+import { UserModel } from "../models/user.js";
+import { generateToken } from "../utils/jwt.js";
+import { comparePassword, validatePassword } from "../utils/password.js";
+import { prisma } from "../db/client.js";
 
 export class AuthController {
   async login(req, res) {
@@ -11,7 +11,7 @@ export class AuthController {
       if (!email || !password) {
         res.status(400).json({
           success: false,
-          message: 'Email y contraseña son requeridos',
+          message: "Email y contraseña son requeridos",
         });
         return;
       }
@@ -21,17 +21,17 @@ export class AuthController {
       if (!user) {
         res.status(401).json({
           success: false,
-          message: 'Credenciales inválidas',
+          message: "Credenciales inválidas",
         });
         return;
       }
-
+      console.log(user, "user");
       const isPasswordValid = await comparePassword(password, user.password);
-
+      console.log(isPasswordValid, "isPasswordValid");
       if (!isPasswordValid) {
         res.status(401).json({
           success: false,
-          message: 'Credenciales inválidas',
+          message: "Credenciales inválidas",
         });
         return;
       }
@@ -48,7 +48,7 @@ export class AuthController {
         address: user.address || undefined,
         phone: user.phone || undefined,
         dataType: user.dataType || undefined,
-        birthDate: user.birthDate.toISOString().split('T')[0],
+        birthDate: user.birthDate.toISOString().split("T")[0],
         dni: user.dni,
         isAdmin: user.isAdmin,
         roles: roleIds,
@@ -60,7 +60,7 @@ export class AuthController {
     } catch (error) {
       res.status(500).json({
         success: false,
-        message: error.message || 'Error al iniciar sesión',
+        message: error.message || "Error al iniciar sesión",
       });
     }
   }
@@ -70,7 +70,7 @@ export class AuthController {
       if (!req.user) {
         res.status(401).json({
           success: false,
-          message: 'Usuario no autenticado',
+          message: "Usuario no autenticado",
         });
         return;
       }
@@ -80,7 +80,7 @@ export class AuthController {
       if (!roles || !Array.isArray(roles) || roles.length === 0) {
         res.status(400).json({
           success: false,
-          message: 'Se requiere un array de IDs de roles',
+          message: "Se requiere un array de IDs de roles",
         });
         return;
       }
@@ -96,19 +96,21 @@ export class AuthController {
       if (!user) {
         res.status(404).json({
           success: false,
-          message: 'Usuario no encontrado',
+          message: "Usuario no encontrado",
         });
         return;
       }
 
       // Verificar que todos los roles pertenecen al usuario
       const userRoleIds = user.roles.map((r) => r.id);
-      const allRolesBelongToUser = roles.every((id) => userRoleIds.includes(id));
+      const allRolesBelongToUser = roles.every((id) =>
+        userRoleIds.includes(id)
+      );
 
       if (!allRolesBelongToUser) {
         res.status(403).json({
           success: false,
-          message: 'Uno o más roles no pertenecen al usuario',
+          message: "Uno o más roles no pertenecen al usuario",
         });
         return;
       }
@@ -124,7 +126,7 @@ export class AuthController {
       if (rolesData.length !== roles.length) {
         res.status(404).json({
           success: false,
-          message: 'Uno o más roles no existen',
+          message: "Uno o más roles no existen",
         });
         return;
       }
@@ -146,7 +148,7 @@ export class AuthController {
     } catch (error) {
       res.status(400).json({
         success: false,
-        message: error.message || 'Error al obtener roles',
+        message: error.message || "Error al obtener roles",
       });
     }
   }
@@ -158,30 +160,36 @@ export class AuthController {
       if (latitude === undefined || longitude === undefined) {
         res.status(400).json({
           success: false,
-          message: 'Latitud y longitud son requeridos',
+          message: "Latitud y longitud son requeridos",
         });
         return;
       }
 
       // Obtener la configuración del restaurante
       const restaurant = await prisma.restaurant.findFirst({
-        orderBy: { id: 'asc' },
+        orderBy: { id: "asc" },
       });
 
       if (!restaurant) {
         res.status(400).json({
           success: false,
-          message: 'La ubicación del restaurante no está configurada',
+          message: "La ubicación del restaurante no está configurada",
         });
         return;
       }
 
-      const { isWithinRadius } = await import('../utils/location.js');
+      const { isWithinRadius } = await import("../utils/location.js");
       const restLat = Number(restaurant.latitude);
       const restLon = Number(restaurant.longitud);
       const restRadius = Number(restaurant.radius);
 
-      const is_inside = isWithinRadius(latitude, longitude, restLat, restLon, restRadius);
+      const is_inside = isWithinRadius(
+        latitude,
+        longitude,
+        restLat,
+        restLon,
+        restRadius
+      );
 
       res.json({
         is_inside,
@@ -196,7 +204,7 @@ export class AuthController {
     } catch (error) {
       res.status(400).json({
         success: false,
-        message: error.message || 'Error al verificar ubicación',
+        message: error.message || "Error al verificar ubicación",
       });
     }
   }
@@ -206,7 +214,7 @@ export class AuthController {
       if (!req.user) {
         res.status(401).json({
           success: false,
-          message: 'Usuario no autenticado',
+          message: "Usuario no autenticado",
         });
         return;
       }
@@ -216,7 +224,7 @@ export class AuthController {
       if (!user_id || !new_password) {
         res.status(400).json({
           success: false,
-          message: 'user_id y new_password son requeridos',
+          message: "user_id y new_password son requeridos",
         });
         return;
       }
@@ -247,9 +255,13 @@ export class AuthController {
             for (const permission of role.permissions) {
               // Verificar según especificaciones: type="RESOURCE", resource="User_seguridad", method="UPDATE" o "ALL"
               // Nota: También aceptamos "RECURSO" por compatibilidad con la BD actual
-              const isValidType = permission.type === 'RESOURCE' || permission.type === 'RECURSO';
-              const isValidResource = permission.resource === 'User_seguridad' || String(permission.resource) === 'User_seguridad';
-              const isValidMethod = permission.method === 'UPDATE' || permission.method === 'ALL';
+              const isValidType =
+                permission.type === "RESOURCE" || permission.type === "RECURSO";
+              const isValidResource =
+                permission.resource === "User_seguridad" ||
+                String(permission.resource) === "User_seguridad";
+              const isValidMethod =
+                permission.method === "UPDATE" || permission.method === "ALL";
 
               if (isValidType && isValidResource && isValidMethod) {
                 hasPermission = true;
@@ -264,7 +276,7 @@ export class AuthController {
       if (!hasPermission) {
         res.status(403).json({
           success: false,
-          message: 'No tiene permisos para realizar esta acción',
+          message: "No tiene permisos para realizar esta acción",
         });
         return;
       }
@@ -274,7 +286,7 @@ export class AuthController {
       if (!targetUser) {
         res.status(404).json({
           success: false,
-          message: 'Usuario no encontrado',
+          message: "Usuario no encontrado",
         });
         return;
       }
@@ -292,12 +304,12 @@ export class AuthController {
       await UserModel.changePassword(user_id, new_password);
 
       res.json({
-        message: 'Cambio de contraseña ejecutado exitosamente',
+        message: "Cambio de contraseña ejecutado exitosamente",
       });
     } catch (error) {
       res.status(400).json({
         success: false,
-        message: error.message || 'Error al cambiar contraseña',
+        message: error.message || "Error al cambiar contraseña",
       });
     }
   }
@@ -307,7 +319,7 @@ export class AuthController {
       if (!req.user) {
         res.status(401).json({
           success: false,
-          message: 'Usuario no autenticado',
+          message: "Usuario no autenticado",
         });
         return;
       }
@@ -317,7 +329,7 @@ export class AuthController {
       if (!current_password || !new_password) {
         res.status(400).json({
           success: false,
-          message: 'current_password y new_password son requeridos',
+          message: "current_password y new_password son requeridos",
         });
         return;
       }
@@ -327,17 +339,20 @@ export class AuthController {
       if (!user) {
         res.status(404).json({
           success: false,
-          message: 'Usuario no encontrado',
+          message: "Usuario no encontrado",
         });
         return;
       }
 
       // Verificar que la contraseña actual coincida con la del body
-      const isCurrentPasswordValid = await comparePassword(current_password, user.password);
+      const isCurrentPasswordValid = await comparePassword(
+        current_password,
+        user.password
+      );
       if (!isCurrentPasswordValid) {
         res.status(400).json({
           success: false,
-          message: 'La contraseña actual es incorrecta',
+          message: "La contraseña actual es incorrecta",
         });
         return;
       }
@@ -355,12 +370,12 @@ export class AuthController {
       await UserModel.changePassword(req.user.id, new_password);
 
       res.json({
-        message: 'Cambio de contraseña ejecutado exitosamente',
+        message: "Cambio de contraseña ejecutado exitosamente",
       });
     } catch (error) {
       res.status(400).json({
         success: false,
-        message: error.message || 'Error al cambiar contraseña',
+        message: error.message || "Error al cambiar contraseña",
       });
     }
   }
@@ -377,7 +392,7 @@ export class AuthController {
       ) {
         res.status(400).json({
           success: false,
-          message: 'table_id, customer_name y customer_dni son requeridos',
+          message: "table_id, customer_name y customer_dni son requeridos",
         });
         return;
       }
@@ -387,7 +402,7 @@ export class AuthController {
       if (!Number.isInteger(tableIdNumber) || tableIdNumber <= 0) {
         res.status(400).json({
           success: false,
-          message: 'table_id debe ser un número entero positivo',
+          message: "table_id debe ser un número entero positivo",
         });
         return;
       }
@@ -397,7 +412,7 @@ export class AuthController {
       if (!normalizedName) {
         res.status(400).json({
           success: false,
-          message: 'customer_name no puede estar vacío',
+          message: "customer_name no puede estar vacío",
         });
         return;
       }
@@ -409,7 +424,7 @@ export class AuthController {
         res.status(400).json({
           success: false,
           message:
-            'customer_dni debe ser una cédula válida (prefijo opcional V/E/J/P y solo dígitos)',
+            "customer_dni debe ser una cédula válida (prefijo opcional V/E/J/P y solo dígitos)",
         });
         return;
       }
@@ -426,10 +441,8 @@ export class AuthController {
     } catch (error) {
       res.status(400).json({
         success: false,
-        message: error.message || 'Error al generar sesión de cliente',
+        message: error.message || "Error al generar sesión de cliente",
       });
     }
   }
 }
-
-

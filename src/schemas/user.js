@@ -1,4 +1,5 @@
 import z from "zod";
+import { DataType } from "@prisma/client";
 
 const userSchema = z.object({
   name: z.string().min(1, "El nombre es requerido"),
@@ -7,18 +8,20 @@ const userSchema = z.object({
   password: z.string().min(8, "La contraseña debe tener al menos 8 caracteres"),
   address: z.string().optional(),
   phone: z.string().optional(),
-  dataType: z.enum(['MESERO', 'GERENTE', 'ADMIN', 'COCINA', 'DELIVERY']).optional(),
-  birthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Formato de fecha inválido (YYYY-MM-DD)"),
+  dataType: z.enum(Object.values(DataType)).optional(),
+  birthDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Formato de fecha inválido (YYYY-MM-DD)"),
   dni: z.string().min(1, "El DNI es requerido"),
   roles: z.array(z.number().int().positive()).optional(),
 });
 
 const validateUser = (data) => {
   return userSchema.safeParse(data);
-}
+};
 
 const validatePartialUser = (data) => {
   return userSchema.partial().safeParse(data);
-}
+};
 
 export { validateUser, validatePartialUser };

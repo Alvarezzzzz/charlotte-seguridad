@@ -1,5 +1,5 @@
-import { prisma } from '../db/client.js';
-import { hashPassword, comparePassword } from '../utils/password.js';
+import { prisma } from "../db/client.js";
+import { hashPassword, comparePassword } from "../utils/password.js";
 
 export class UserModel {
   static async create(data) {
@@ -75,7 +75,7 @@ export class UserModel {
 
   static async getAll(dataType = null) {
     const where = dataType ? { dataType } : {};
-    
+
     return prisma.user.findMany({
       where,
       include: {
@@ -89,7 +89,7 @@ export class UserModel {
   }
 
   static async changePassword(userId, newPassword) {
-    const { hashPassword } = await import('../utils/password.js');
+    const { hashPassword } = await import("../utils/password.js");
     const hashedPassword = await hashPassword(newPassword);
 
     return prisma.user.update({
@@ -135,9 +135,9 @@ export class UserModel {
     for (const role of user.roles) {
       for (const permission of role.permissions) {
         if (
-          permission.type === 'RECURSO' &&
+          permission.type === "RESOURCE" &&
           permission.resource === resource &&
-          (permission.method === method || permission.method === 'ALL')
+          (permission.method === method || permission.method === "ALL")
         ) {
           return true;
         }
