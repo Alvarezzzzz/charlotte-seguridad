@@ -1,6 +1,7 @@
 import { validateUser, validatePartialUser } from "../schemas/user.js";
 import { UserModel } from "../models/user.js";
 import { validatePassword } from "../utils/password.js";
+import { DataType } from "@prisma/client";
 
 export class UserController {
   constructor() {}
@@ -43,7 +44,7 @@ export class UserController {
         return;
       }
 
-      const { password, roles, birthDate, ...userData } = result.data;
+      const { password, roles, birthDate, email, dni, ...userData } = result.data;
 
       // Validar contraseña
       const passwordValidation = validatePassword(password);
@@ -51,6 +52,26 @@ export class UserController {
         res.status(400).json({
           success: false,
           message: passwordValidation.message,
+        });
+        return;
+      }
+
+      // Validar que el email no esté en uso
+      const existingUserByEmail = await UserModel.findByEmail(email);
+      if (existingUserByEmail) {
+        res.status(400).json({
+          success: false,
+          message: "El email ya está en uso",
+        });
+        return;
+      }
+
+      // Validar que el DNI no esté en uso
+      const existingUserByDni = await UserModel.findByDni(dni);
+      if (existingUserByDni) {
+        res.status(400).json({
+          success: false,
+          message: "El DNI ya está en uso",
         });
         return;
       }
@@ -73,6 +94,8 @@ export class UserController {
 
       const user = await UserModel.create({
         ...userData,
+        email,
+        dni,
         birthDate: birthDate ? new Date(birthDate) : undefined,
         password,
         roles: roles || [],
@@ -235,7 +258,31 @@ export class UserController {
         return;
       }
 
-      const { roles, birthDate, ...userData } = result.data;
+      const { roles, birthDate, email, dni, ...userData } = result.data;
+
+      // Validar que el email no esté en uso (solo si se está actualizando)
+      if (email && email !== existingUser.email) {
+        const existingUserByEmail = await UserModel.findByEmail(email);
+        if (existingUserByEmail) {
+          res.status(400).json({
+            success: false,
+            message: "El email ya está en uso",
+          });
+          return;
+        }
+      }
+
+      // Validar que el DNI no esté en uso (solo si se está actualizando)
+      if (dni && dni !== existingUser.dni) {
+        const existingUserByDni = await UserModel.findByDni(dni);
+        if (existingUserByDni) {
+          res.status(400).json({
+            success: false,
+            message: "El DNI ya está en uso",
+          });
+          return;
+        }
+      }
 
       // Verificar roles si se proporcionan
       if (roles && roles.length > 0) {
@@ -255,6 +302,8 @@ export class UserController {
 
       await UserModel.update(id, {
         ...userData,
+        ...(email && { email }),
+        ...(dni && { dni }),
         ...(birthDate && { birthDate: new Date(birthDate) }),
         roles: roles || undefined,
       });
@@ -375,6 +424,16 @@ export class UserController {
       }
 
       const dataType = req.query.dataType || null;
+      
+      // Validar que el dataType pasado sea un valor válido según el enum del schema.prisma
+      if (dataType && !Object.values(DataType).includes(dataType)) {
+        res.status(400).json({
+          success: false,
+          message: `El dataType "${dataType}" no es válido. Valores válidos: ${Object.values(DataType).join(", ")}`,
+        });
+        return;
+      }
+
       const users = await UserModel.getAll(dataType);
 
       const result = users.map((user) => ({
@@ -447,7 +506,7 @@ export class UserController {
         return;
       }
 
-      const { roles, birthDate, password, ...userData } = result.data;
+      const { roles, birthDate, password, email, dni, ...userData } = result.data;
 
       // No permitir cambio de contraseña por este endpoint
       if (password) {
@@ -456,6 +515,30 @@ export class UserController {
           message: "No se puede cambiar la contraseña por este endpoint",
         });
         return;
+      }
+
+      // Validar que el email no esté en uso (solo si se está actualizando)
+      if (email && email !== existingUser.email) {
+        const existingUserByEmail = await UserModel.findByEmail(email);
+        if (existingUserByEmail) {
+          res.status(400).json({
+            success: false,
+            message: "El email ya está en uso",
+          });
+          return;
+        }
+      }
+
+      // Validar que el DNI no esté en uso (solo si se está actualizando)
+      if (dni && dni !== existingUser.dni) {
+        const existingUserByDni = await UserModel.findByDni(dni);
+        if (existingUserByDni) {
+          res.status(400).json({
+            success: false,
+            message: "El DNI ya está en uso",
+          });
+          return;
+        }
       }
 
       // Verificar roles si se proporcionan
@@ -477,6 +560,8 @@ export class UserController {
       // Actualizar el usuario
       const updatedUser = await UserModel.update(req.user.id, {
         ...userData,
+        ...(email && { email }),
+        ...(dni && { dni }),
         ...(birthDate && { birthDate: new Date(birthDate) }),
         roles: roles || undefined,
       });

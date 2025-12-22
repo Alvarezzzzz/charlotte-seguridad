@@ -141,6 +141,7 @@ export class AuthController {
           resource: perm.resource,
           method: perm.method,
           isAdmin: role.isAdmin,
+          roleId: perm.roleId,
         })),
       }));
 
