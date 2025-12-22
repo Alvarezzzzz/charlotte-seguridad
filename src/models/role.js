@@ -1,60 +1,55 @@
 import { prisma } from '../db/client.js';  
+
 export class RoleModel {
+   async create({ data }) {
+    const { permissions, users, ...roleData } = data;
 
-    async create ({ data }) {
-        return await prisma.role.create({
-            data: data,
-        });
-    }
-
-    async findById ({ id }) { 
-        return await prisma.role.findUnique({
-            where: { id: Number(id)  },    
-            include: {
-                permissions: true,
-                users: true,
-            },
-
-        });
-    }
-
-    async update ({ id, data }) {
-         console.log(id, "id rol");
-        return await prisma.role.update({
+    return await prisma.role.create({
+        data: {
+            ...roleData,
             
-            where: { id: Number(id) },
-            data: data,
-            include: {
-                permissions: true,
-                users: true,
-            },
-           
-        });
-    }
-
-    async delete ({ id }) {
-
-        return await prisma.role.delete({
-            where: { id: Number(id) }
-        });
-    }
-
-    async getAll({ isAdmin } = {}) {
-        if (isAdmin !== undefined) {
-           
-             return await prisma.role.findMany({
-                where: { isAdmin: isAdmin },
-                include: {
-                    permissions: true,
-                    users: true,
-                },
-             });
+            permissions: permissions ? {
+                connect: permissions.map(id => ({ id }))
+            } : undefined,
+            
+            users: users ? {
+                connect: users.map(id => ({ id }))
+            } : undefined
         }
-        return await prisma.role.findMany({
-            include: {
-                permissions: true,
-                users: true,
-            },
-        });
-    }
+    });
+}
+
+   async findById({ id }) { 
+    return await prisma.role.findUnique({
+        where: { id: Number(id) },    
+        include: {
+            permissions: true, 
+            users: true,
+        },
+    });
+}
+
+async update({ id, data }) {
+    const { permissions, users, ...roleData } = data;
+
+    return await prisma.role.update({
+        where: { id: Number(id) },
+        data: {
+            ...roleData,
+            
+            permissions: permissions ? {
+                set: permissions.map(pId => ({ id: pId }))
+            } : undefined,
+            users: users ? {
+                set: users.map(uId => ({ id: uId }))
+            } : undefined
+        }
+    });
+}
+
+    async delete({ id }) {
+    return await prisma.role.delete({
+        where: { id: Number(id) }
+    });
+}
 }

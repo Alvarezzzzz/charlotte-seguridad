@@ -1,130 +1,180 @@
-import {
-  validatePermission,
-  validatePartialPermission,
-} from "../schemas/permission.js";
+import { validatePermission, validatePartialPermission } from "../schemas/permission.js";
 import { PermissionModel } from "../models/permission.js";
+import { UserModel } from "../models/user.js";
 
 export class PermissionController {
   constructor() {
     this.permissionModel = new PermissionModel();
   }
 
-  createPermission = async (req, res) => {
+  getAllPermissions = async (req, res) => {
     try {
-      const result = validatePermission(req.body);
+      const hasPermission = req.user.isAdmin || 
+        (await UserModel.checkUserPermission(req.user.id, "Permission", "Read")) ||
+        (await UserModel.checkUserPermission(req.user.id, "Permission", "All"));
 
-      if (!result.success) {
-        return res
-          .status(400)
-          .json({ error: JSON.parse(result.error.message) });
+      if (!hasPermission) {
+        return res.status(403).json({ success: false, message: "Sin permisos para ver permisos" });
       }
-      const { roleId, ...permissionData } = result.data;
 
-      const newPermission = await this.permissionModel.create({
-        permissionData,
-        roleId: Number(roleId),
-      });
+      const includeRole = req.query.includeRole === "true";
+      const permissions = await this.permissionModel.getAll(includeRole);
 
-      res.status(201).json(newPermission);
+      const result = permissions.map((p) => ({
+        id: p.id,
+        name: p.name,
+        type: p.type,
+        resource: p.resource,
+        method: p.method,
+        ...(includeRole && p.role && {
+          role: {
+            id: p.role.id,
+            name: p.role.name
+          }
+        })
+      }));
+
+      return res.json(result);
     } catch (error) {
-      console.error("Error creating permission:", error.message);
-
-      if (error.code === "P2002") {
-        return res.status(409).json({
-          error: "Permission already exists for this resource and method",
-        });
-      }
-      res
-        .status(500)
-        .json({ error: "Could not create permission or link to role" });
+      return res.status(500).json({ success: false, message: error.message });
     }
   };
-
-  // PermissionController.js
 
   getPermissionById = async (req, res) => {
     try {
-      let { id } = req.params;
+      const id = parseInt(req.params.id);
+      const permission = await this.permissionModel.findById({ id });
 
-      if (typeof id === "string" && id.startsWith(":")) {
-        id = id.replace(":", "");
-      }
+      if (!permission) return res.status(404).json({ success: false, message: "No existe" });
 
-      if (!id) {
-        return res
-          .status(400)
-          .json({ error: "Missing Permission ID in URL path." });
-      }
-
-      const permission = await this.permissionModel.findById({
-        id: Number(id),
+      return res.json({
+        id: permission.id,
+        name: permission.name,
+        type: permission.type,
+        resource: permission.resource,
+        method: permission.method,
+        role: { id: permission.role?.id, name: permission.role?.name }
       });
-
-      if (!permission) {
-        // Si Prisma devuelve null (no encontrado)
-        return res.status(404).json({ error: "Permission not found" });
-      }
-
-      res.json(permission);
     } catch (error) {
-      console.error("Error getting permission by ID:", error.message);
-      res.status(500).json({ error: "Could not retrieve permission" });
+      return res.status(500).json({ success: false, message: error.message });
     }
   };
 
-  updatePermission = async (req, res) => {
-    try {
-      const result = validatePartialPermission(req.body);
+  createPermission = async (req, res) => {
+  try {
+    const hasPermission = req.user.isAdmin || 
+      (await UserModel.checkUserPermission(req.user.id, "Permission", "Create")) ||
+      (await UserModel.checkUserPermission(req.user.id, "Permission", "All"));
 
-      if (!result.success) {
-        return res
-          .status(400)
-          .json({ error: JSON.parse(result.error.message) });
-      }
-
-      const { id } = req.params;
-
-      const updatedPermission = await this.permissionModel.update({
-        id: Number(id),
-        data: result.data,
-      });
-      console.log(updatedPermission);
-      if (!updatedPermission) {
-        return res.status(404).json({ error: "Permission not found" });
-      }
-
-      res.json(updatedPermission);
-    } catch (error) {
-      console.error("Error updating permission:", error.message);
-      res.status(500).json({ error: "Could not update permission" });
+    if (!hasPermission) {
+      return res.status(403).json({ success: false, message: "No tiene permisos" });
     }
-  };
+
+    const result = validatePermission(req.body);
+    if (!result.success) {
+      return res.status(400).json({ success: false, errors: result.error.format() });
+    }
+
+    const { roleId, resource, method } = result.data;
+    const { prisma } = await import("../db/client.js");
+
+    const existingPermission = await prisma.permission.findFirst({
+      where: {
+        resource: resource,
+        method: method,
+        roleId: Number(roleId)
+      }
+    });
+
+    if (existingPermission) {
+      return res.status(409).json({ 
+        success: false, 
+        message: `Ya existe un permiso de tipo ${method} para el recurso ${resource} en este rol.` 
+      });
+    }
+
+    const roleExists = await prisma.role.findUnique({ where: { id: Number(roleId) } });
+    if (!roleExists) {
+      return res.status(404).json({ success: false, message: "El Rol asociado no existe" });
+    }
+
+    const newPermission = await this.permissionModel.create({
+      permissionData: result.data,
+      roleId: Number(roleId)
+    });
+
+    return res.status(201).json({
+      message: "Permiso creado exitosamente",
+      permission_id: newPermission.id
+    });
+
+  } catch (error) {
+    console.error("Error en POST Permission:", error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+  
+
+ updatePermission = async (req, res) => {
+  try {
+  
+    const hasPermission = req.user.isAdmin || 
+      (await UserModel.checkUserPermission(req.user.id, "Permission", "Update")) ||
+      (await UserModel.checkUserPermission(req.user.id, "Permission", "All"));
+
+    if (!hasPermission) {
+      return res.status(403).json({ success: false, message: "No autorizado para actualizar permisos" });
+    }
+
+    const { id } = req.params;
+
+    const permissionExists = await this.permissionModel.findById({ id: Number(id) });
+    if (!permissionExists) {
+      return res.status(404).json({ success: false, message: "El permiso no existe" });
+    }
+
+    const result = validatePartialPermission(req.body);
+    if (!result.success) {
+      return res.status(400).json({ success: false, errors: result.error.format() });
+    }
+
+    if (result.data.roleId) {
+      const { prisma } = await import("../db/client.js");
+      const roleExists = await prisma.role.findUnique({
+        where: { id: Number(result.data.roleId) }
+      });
+      if (!roleExists) {
+        return res.status(404).json({ success: false, message: "El nuevo Rol asociado no existe" });
+      }
+    }
+
+    const updatedPermission = await this.permissionModel.update({
+      id: Number(id),
+      data: result.data
+    });
+
+    return res.json({
+      message: "Permiso actualizado exitosamente",
+      permission_id: updatedPermission.id
+    });
+
+  } catch (error) {
+    console.error("Error en PATCH Permission:", error);
+    return res.status(400).json({ 
+      success: false, 
+      message: "No se pudo actualizar el permiso",
+      details: error.message 
+    });
+  }
+};
 
   deletePermission = async (req, res) => {
     try {
-      const { id } = req.params;
-
-      const deleted = await this.permissionModel.delete({ id: Number(id) });
-
-      if (!deleted) {
-        return res.status(404).json({ error: "Permission not found" });
-      }
-
-      res.status(200).json({ message: "Permission successfully deleted" });
+      const id = parseInt(req.params.id);
+      await this.permissionModel.delete({ id });
+      return res.json({ message: "Permiso Eliminado exitosamente" });
     } catch (error) {
-      console.error("Error deleting permission:", error.message);
-      res.status(500).json({ error: "Could not delete permission" });
+      return res.status(400).json({ success: false, message: "No se pudo eliminar" });
     }
   };
-
-  getAllPermissions = async (req, res) => {
-    try {
-      const permissions = await this.permissionModel.getAll();
-
-      res.json(permissions);
-    } catch (error) {
-      console.error("Error getting all permissions:", error.message);
-      res.status(500).json({ error: "Could not retrieve permissions" });
-    }
-  };
-}
+};
