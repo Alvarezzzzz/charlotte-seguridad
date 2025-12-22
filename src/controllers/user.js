@@ -36,6 +36,7 @@ export class UserController {
       const result = validateUser(req.body);
 
       if (!result.success) {
+        console.log(result.error);
         res.status(400).json({
           success: false,
           message: "Datos inválidos",
@@ -44,7 +45,8 @@ export class UserController {
         return;
       }
 
-      const { password, roles, birthDate, email, dni, ...userData } = result.data;
+      const { password, roles, birthDate, email, dni, ...userData } =
+        result.data;
 
       // Validar contraseña
       const passwordValidation = validatePassword(password);
@@ -424,12 +426,14 @@ export class UserController {
       }
 
       const dataType = req.query.dataType || null;
-      
+
       // Validar que el dataType pasado sea un valor válido según el enum del schema.prisma
       if (dataType && !Object.values(DataType).includes(dataType)) {
         res.status(400).json({
           success: false,
-          message: `El dataType "${dataType}" no es válido. Valores válidos: ${Object.values(DataType).join(", ")}`,
+          message: `El dataType "${dataType}" no es válido. Valores válidos: ${Object.values(
+            DataType
+          ).join(", ")}`,
         });
         return;
       }
@@ -506,7 +510,8 @@ export class UserController {
         return;
       }
 
-      const { roles, birthDate, password, email, dni, ...userData } = result.data;
+      const { roles, birthDate, password, email, dni, ...userData } =
+        result.data;
 
       // No permitir cambio de contraseña por este endpoint
       if (password) {

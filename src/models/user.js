@@ -155,4 +155,46 @@ export class UserModel {
 
     return false;
   }
+
+  static async checUserAnyPermission(userId, resource, method) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        roles: {
+          include: {
+            permissions: true,
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      return false;
+    }
+    // Si es admin, tiene todos los permisos
+    if (user.isAdmin) {
+      return true;
+    }
+    // Verificar permisos
+    for (const role of user.roles) {
+      for (const permission of role.permissions) {
+        if (method == "View") {
+          if (
+            permission.type === "View" &&
+            permission.resource === resource &&
+            permission.method === method
+          ) {
+            return true;
+          }
+        }
+        if (
+          permission.type === "Resource" &&
+          permission.resource === resource &&
+          (permission.method === method || permission.method === "All")
+        ) {
+          return true;
+        }
+      }
+    }
+  }
 }

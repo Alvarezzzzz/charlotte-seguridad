@@ -2,6 +2,7 @@ import { UserModel } from "../models/user.js";
 import { generateToken } from "../utils/jwt.js";
 import { comparePassword, validatePassword } from "../utils/password.js";
 import { prisma } from "../db/client.js";
+import { validateHasPermission } from "../schemas/auth.js";
 
 export class AuthController {
   async login(req, res) {
@@ -442,6 +443,49 @@ export class AuthController {
       res.status(400).json({
         success: false,
         message: error.message || "Error al generar sesión de cliente",
+      });
+    }
+  }
+
+  async hasPermission(req, res) {
+    try {
+      if (!req.user) {
+        res.status(401).json({
+          success: false,
+          message: "Usuario no autenticado",
+        });
+        return;
+      }
+
+      const { resource, method } = req.body;
+      const result = validateHasPermission({ resource, method });
+      if (!result.success) {
+        const formattedErrors = result.error.issues.map((issue) => ({
+          path: issue.path.join("."),
+          message: issue.message,
+        }));
+
+        res.status(400).json({
+          success: false,
+          message: "Error de validación en los datos enviados",
+          errors: formattedErrors,
+        });
+
+        return;
+      }
+      const hasPermission = await UserModel.checUserAnyPermission(
+        req.user.id,
+        resource,
+        method
+      );
+
+      res.json({
+        hasPermission: hasPermission === true,
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message || "Error al verificar permisos",
       });
     }
   }
