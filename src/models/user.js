@@ -44,6 +44,15 @@ export class UserModel {
     });
   }
 
+  static async findByDni(dni) {
+    return prisma.user.findUnique({
+      where: { dni },
+      include: {
+        roles: true,
+      },
+    });
+  }
+
   static async update(id, data) {
     const { roles, ...userData } = data;
 
