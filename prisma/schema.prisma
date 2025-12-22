@@ -112,6 +112,7 @@ model User {
   birthDate       DateTime
   dni              String   @unique
   isAdmin        Boolean   @default(false)
+  isActive       Boolean   @default(true)
 
   // M:N con Rol (tabla intermedia implícita)
   roles            Role[]
