@@ -5,4 +5,5 @@ export const {
   DIRECT_URL = process.env.DIRECT_URL,
   NODE_ENV = process.env.NODE_ENV,
   ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS,
+  ANY_ORIGIN = process.env.ANY_ORIGIN,
 } = process.env;
