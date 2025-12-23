@@ -11,33 +11,83 @@ datasource db {
 
 // Esto es tentativo y se iran anexando mas opciones de dataType segun requieran los otros modulos
 enum DataType {
-  MESERO
-  GERENTE
-  ADMIN
-  COCINA
-  DELIVERY
+  Kitchen
+  Dp
 }
 
 enum PermissionType {
-  VISTA
-  RECURSO
+  View
+  Resource
 }
 
-// Esto es tentativo y se iran anexando mas opciones de resource segun requieran los otros modulos
 enum Resource {
-  PEDIDO
-  RECETA
-  PRODUCTO
-  MESA
-  MESEROS_VIEW
+  // Tablas de seguridad
+  Restaurant_seguridad
+  User_seguridad
+  Role_seguridad
+  Permission_seguridad
+  // Tablas de cocina 
+  KitchenCategory_cocina
+  Recipe_cocina
+  InventoryItem_cocina
+  InventoryLog_cocina
+  KitchenAsset_cocina
+  AssetLog_cocina
+  KitchenStaff_cocina
+  StaffShift_cocina
+  KdsProducionQueue_cocina
+  // Tablas de kpi (Ojo estas pueden cambiar pq todavia andan cambiando los nombres de las tablas)
+  KpiMetas_kpi
+  KpiReglaSemaforo_kpi
+  KpiSnapshotDiario_kpi
+  KpiAlertaHistorial_kpi
+  KpiAuditoriaExport_kpi
+  // Tablas de ATC
+  Table_atc
+  ClienteTemporal_atc
+  Comanda_atc
+  OrderItem_atc
+  ServiceRequest_atc
+  // Tablas de Delivery y Pickup
+  Zones_dp
+  Thresholds_dp
+  Managers_dp
+  Notes_dp
+  NotesItems_dp
+  Logs_dp
+
+  // Vistas
+
+  // Vistas de cocina
+  ResourceManager_view
+  KdsProduction_view
+  WaiterStaff_view
+  KitechenStaffShift_view
+
+  // Vistas de Delivery y Pickup
+  DeliveryPickup_view
+
+  // Vistas de kpi
+  KpiDashboard_view
+
+  // Vistas de seguridad
+  UserManagement_view
+  RestaurantCoordinates_view
+
+  // Vistas de ATC
+  TableManagement_view
+
 }
 
 enum Method {
-  CREATE
-  READ
-  UPDATE
-  DELETE
-  VIEW
+  // Para type Resource
+  Create
+  Read
+  Update
+  Delete
+  All
+  // Para type View
+  View
 }
 
 // --- MODELOS ---
@@ -57,11 +107,12 @@ model User {
   email           String    @unique
   address        String?
   phone         String?
-  dataType        DataType
+  dataType        DataType?
   password       String    // evita usar "ñ" en nombres de campos
   birthDate       DateTime
   dni              String   @unique
   isAdmin        Boolean   @default(false)
+  isActive       Boolean   @default(true)
 
   // M:N con Rol (tabla intermedia implícita)
   roles            Role[]
@@ -74,7 +125,6 @@ model Role {
   id          Int        @id @default(autoincrement())
   name        String      @unique
   description String?
-  isAdmin   Boolean    @default(false)
 
   // inversa M:N con Usuario
   users       User[]
@@ -92,7 +142,6 @@ model Permission {
   type      PermissionType
   resource  Resource
   method    Method
-  isAdmin  Boolean      @default(false)
 
   // N:1 con Role
   roleId    Int
@@ -101,8 +150,7 @@ model Permission {
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
 
-  // Evita permisos duplicados por rol
-  @@unique([roleId, type, resource, method])
+
 }
 
 model SecurityProductExample {
