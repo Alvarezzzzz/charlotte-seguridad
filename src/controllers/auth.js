@@ -37,6 +37,15 @@ export class AuthController {
         return;
       }
 
+      // Verificar que el usuario esté activo
+      if (!user.isActive) {
+        res.status(401).json({
+          success: false,
+          message: "Usuario inactivo. No se puede iniciar sesión",
+        });
+        return;
+      }
+
       // Obtener IDs de roles
       const roleIds = user.roles.map((role) => role.id);
 
@@ -52,6 +61,7 @@ export class AuthController {
         birthDate: user.birthDate.toISOString().split("T")[0],
         dni: user.dni,
         isAdmin: user.isAdmin,
+        isActive: user.isActive,
         roles: roleIds,
       };
 
@@ -98,6 +108,15 @@ export class AuthController {
         res.status(404).json({
           success: false,
           message: "Usuario no encontrado",
+        });
+        return;
+      }
+
+      // Verificar que el usuario obtenido del token de sesión esté activo
+      if (!user.isActive) {
+        res.status(403).json({
+          success: false,
+          message: "Usuario inactivo. No se puede realizar esta acción",
         });
         return;
       }
@@ -345,6 +364,15 @@ export class AuthController {
         return;
       }
 
+      // Verificar que el usuario del token de sesión esté activo
+      if (!user.isActive) {
+        res.status(403).json({
+          success: false,
+          message: "Usuario inactivo. No se puede realizar esta acción",
+        });
+        return;
+      }
+
       // Verificar que la contraseña actual coincida con la del body
       const isCurrentPasswordValid = await comparePassword(
         current_password,
@@ -383,17 +411,18 @@ export class AuthController {
 
   async clientSession(req, res) {
     try {
-      const { table_id, customer_name, customer_dni } = req.body;
+      const { table_id, customer_name, customer_dni, role } = req.body;
 
       // Validar presencia de campos
       if (
         table_id === undefined ||
         customer_name === undefined ||
-        customer_dni === undefined
+        customer_dni === undefined ||
+        role === undefined
       ) {
         res.status(400).json({
           success: false,
-          message: "table_id, customer_name y customer_dni son requeridos",
+          message: "table_id, customer_name, customer_dni y role son requeridos",
         });
         return;
       }
@@ -430,10 +459,28 @@ export class AuthController {
         return;
       }
 
+      // Validar que role sea un string y que solo acepte el valor "GUEST"
+      if (typeof role !== "string") {
+        res.status(400).json({
+          success: false,
+          message: "role debe ser un string",
+        });
+        return;
+      }
+
+      if (role !== "GUEST") {
+        res.status(400).json({
+          success: false,
+          message: 'role solo puede tener el valor "GUEST"',
+        });
+        return;
+      }
+
       const tokenPayload = {
         table_id: tableIdNumber,
         customer_name: normalizedName,
         customer_dni: normalizedDni.toUpperCase(),
+        role: role,
       };
 
       const token = generateToken(tokenPayload);

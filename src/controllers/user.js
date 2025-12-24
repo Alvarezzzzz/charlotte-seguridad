@@ -45,7 +45,7 @@ export class UserController {
         return;
       }
 
-      const { password, roles, birthDate, email, dni, ...userData } =
+      const { password, roles, birthDate, email, dni, isActive, ...userData } =
         result.data;
 
       // Validar contraseña
@@ -94,12 +94,16 @@ export class UserController {
         }
       }
 
+      // Establecer isActive por defecto en true si no se proporciona
+      const userIsActive = isActive !== undefined ? isActive : true;
+
       const user = await UserModel.create({
         ...userData,
         email,
         dni,
         birthDate: birthDate ? new Date(birthDate) : undefined,
         password,
+        isActive: userIsActive,
         roles: roles || [],
       });
 
@@ -171,6 +175,7 @@ export class UserController {
       }
 
       res.json({
+        id: user.id,
         name: user.name,
         lastName: user.lastName,
         email: user.email,
@@ -179,6 +184,8 @@ export class UserController {
         dataType: user.dataType,
         birthDate: user.birthDate.toISOString().split("T")[0],
         dni: user.dni,
+        isAdmin: user.isAdmin,
+        isActive: user.isActive,
         roles: user.roles.map((role) => ({
           id: role.id,
           name: role.name,
@@ -260,7 +267,7 @@ export class UserController {
         return;
       }
 
-      const { roles, birthDate, email, dni, ...userData } = result.data;
+      const { roles, birthDate, email, dni, isActive, ...userData } = result.data;
 
       // Validar que el email no esté en uso (solo si se está actualizando)
       if (email && email !== existingUser.email) {
@@ -307,6 +314,7 @@ export class UserController {
         ...(email && { email }),
         ...(dni && { dni }),
         ...(birthDate && { birthDate: new Date(birthDate) }),
+        ...(isActive !== undefined && { isActive }),
         roles: roles || undefined,
       });
 
@@ -451,6 +459,7 @@ export class UserController {
         birthDate: user.birthDate.toISOString().split("T")[0],
         dni: user.dni,
         isAdmin: user.isAdmin,
+        isActive: user.isActive,
         roles: user.roles.map((role) => ({
           id: role.id,
           name: role.name,
@@ -510,7 +519,7 @@ export class UserController {
         return;
       }
 
-      const { roles, birthDate, password, email, dni, ...userData } =
+      const { roles, birthDate, password, email, dni, isActive, ...userData } =
         result.data;
 
       // No permitir cambio de contraseña por este endpoint
@@ -518,6 +527,15 @@ export class UserController {
         res.status(400).json({
           success: false,
           message: "No se puede cambiar la contraseña por este endpoint",
+        });
+        return;
+      }
+
+      // No permitir cambio de isActive por este endpoint
+      if (isActive !== undefined) {
+        res.status(400).json({
+          success: false,
+          message: "No se puede actualizar el atributo isActive por este endpoint",
         });
         return;
       }
@@ -584,6 +602,7 @@ export class UserController {
         birthDate: updatedUser.birthDate.toISOString().split("T")[0],
         dni: updatedUser.dni,
         isAdmin: updatedUser.isAdmin,
+        isActive: updatedUser.isActive,
         roles: updatedUser.roles.map((role) => role.id),
       });
 
