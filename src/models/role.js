@@ -1,70 +1,79 @@
-import { prisma } from '../db/client.js';  
+import { prisma } from '../db/client.js';
 
 export class RoleModel {
-async create({ data }) {
-  const { name, description, permissions, users } = data;
+  async create({ data }) {
+    const { name, description, permissions, users } = data;
 
-  const permissionsConnect = (permissions && permissions.length > 0) 
-    ? permissions.map(id => ({ id: Number(id) })) 
-    : [];
+    const permissionsConnect = (permissions && permissions.length > 0)
+      ? permissions.map(id => ({ id: Number(id) }))
+      : [];
 
-  const usersConnect = (users && users.length > 0) 
-    ? users.map(id => ({ id: Number(id) })) 
-    : [];
+    const usersConnect = (users && users.length > 0)
+      ? users.map(id => ({ id: Number(id) }))
+      : [];
 
-  return await prisma.role.create({
-    data: {
-      name,
-      description,
-      permissions: {
-        connect: permissionsConnect
-      },
-      users: {
-        connect: usersConnect
-      }
-    }
-  });
-}
-
-   async findById({ id }) { 
-    return await prisma.role.findUnique({
-        where: { id: Number(id) },    
-        include: {
-            permissions: true, 
-            users: true,
+    return await prisma.role.create({
+      data: {
+        name,
+        description,
+        permissions: {
+          connect: permissionsConnect
         },
+        users: {
+          connect: usersConnect
+        }
+      }
     });
-}
-
-async update({ id, data }) {
-  const { name, description, permissions, users } = data;
-
-  const updateData = {
-    ...(name && { name }),
-    ...(description !== undefined && { description }),
-  };
-
-  if (permissions) {
-    updateData.permissions = {
-      set: permissions.map(pId => ({ id: Number(pId) }))
-    };
   }
 
-  if (users) {
-    updateData.users = {
-      set: users.map(uId => ({ id: Number(uId) }))
-    };
+  async findById({ id, includeUsers = false }) {
+    return await prisma.role.findUnique({
+      where: { id: Number(id) },
+      include: {
+        permissions: true,
+        users: includeUsers,
+      },
+    });
   }
 
-  return await prisma.role.update({
-    where: { id: Number(id) },
-    data: updateData
-  });
-}
+  async update({ id, data }) {
+    const { name, description, permissions, users } = data;
 
-    async delete({ id }) {
+    const updateData = {
+      ...(name && { name }),
+      ...(description !== undefined && { description }),
+    };
+
+    if (permissions) {
+      updateData.permissions = {
+        set: permissions.map(pId => ({ id: Number(pId) }))
+      };
+    }
+
+    if (users) {
+      updateData.users = {
+        set: users.map(uId => ({ id: Number(uId) }))
+      };
+    }
+
+    return await prisma.role.update({
+      where: { id: Number(id) },
+      data: updateData
+    });
+  }
+
+  async delete({ id }) {
     return await prisma.role.delete({
-        where: { id: Number(id) }
+      where: { id: Number(id) }
     });
-}
+  }
+
+  async getAll({ includeUsers } = {}) {
+    return await prisma.role.findMany({
+      include: {
+        permissions: true,
+        users: includeUsers,
+      },
+    });
+  }
 }

@@ -31,6 +31,7 @@ const userSchema = z.object({
     .string()
     .min(1, "El DNI es requerido")
     .regex(/^[VE]\d{6,8}$/i, "El DNI debe tener prefijo V o E obligatorio seguido de 6 a 8 números (ejemplo: V31629822)"),
+  isActive: z.boolean().optional().default(true),
   roles: z.array(z.number().int().positive()).optional(),
 });
 

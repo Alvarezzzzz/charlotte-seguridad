@@ -37,6 +37,15 @@ export class AuthController {
         return;
       }
 
+      // Verificar que el usuario esté activo
+      if (!user.isActive) {
+        res.status(401).json({
+          success: false,
+          message: "Usuario inactivo. No se puede iniciar sesión",
+        });
+        return;
+      }
+
       // Obtener IDs de roles
       const roleIds = user.roles.map((role) => role.id);
 
@@ -46,12 +55,13 @@ export class AuthController {
         name: user.name,
         lastName: user.lastName,
         email: user.email,
-        address: user.address || undefined,
-        phone: user.phone || undefined,
-        dataType: user.dataType || undefined,
+        address: user.address,
+        phone: user.phone,
+        dataType: user.dataType,
         birthDate: user.birthDate.toISOString().split("T")[0],
         dni: user.dni,
         isAdmin: user.isAdmin,
+        isActive: user.isActive,
         roles: roleIds,
       };
 
@@ -59,6 +69,7 @@ export class AuthController {
 
       res.json({ token });
     } catch (error) {
+      console.error(error);
       res.status(500).json({
         success: false,
         message: error.message || "Error al iniciar sesión",
@@ -98,6 +109,15 @@ export class AuthController {
         res.status(404).json({
           success: false,
           message: "Usuario no encontrado",
+        });
+        return;
+      }
+
+      // Verificar que el usuario obtenido del token de sesión esté activo
+      if (!user.isActive) {
+        res.status(403).json({
+          success: false,
+          message: "Usuario inactivo. No se puede realizar esta acción",
         });
         return;
       }
@@ -148,6 +168,7 @@ export class AuthController {
 
       res.json(result);
     } catch (error) {
+      console.error(error);
       res.status(400).json({
         success: false,
         message: error.message || "Error al obtener roles",
@@ -204,6 +225,7 @@ export class AuthController {
         },
       });
     } catch (error) {
+      console.error(error);
       res.status(400).json({
         success: false,
         message: error.message || "Error al verificar ubicación",
@@ -220,7 +242,6 @@ export class AuthController {
         });
         return;
       }
-
       const { user_id, new_password } = req.body;
 
       if (!user_id || !new_password) {
@@ -231,9 +252,7 @@ export class AuthController {
         return;
       }
 
-      // Verificar permisos según especificaciones:
-      // - isAdmin: true, O
-      // - type: "RESOURCE", resource: "User_seguridad", method: "UPDATE" o "ALL"
+
       let hasPermission = false;
 
       if (req.user.isAdmin) {
@@ -252,11 +271,9 @@ export class AuthController {
         });
 
         if (user) {
-          // Iterar sobre los permisos de todos los roles del usuario
           for (const role of user.roles) {
             for (const permission of role.permissions) {
-              // Verificar según especificaciones: type="RESOURCE", resource="User_seguridad", method="UPDATE" o "ALL"
-              // Nota: También aceptamos "RECURSO" por compatibilidad con la BD actual
+
               const isValidType = permission.type === "Resource";
               const isValidResource =
                 permission.resource === "User_seguridad" ||
@@ -308,6 +325,7 @@ export class AuthController {
         message: "Cambio de contraseña ejecutado exitosamente",
       });
     } catch (error) {
+      console.error(error);
       res.status(400).json({
         success: false,
         message: error.message || "Error al cambiar contraseña",
@@ -345,6 +363,15 @@ export class AuthController {
         return;
       }
 
+      // Verificar que el usuario del token de sesión esté activo
+      if (!user.isActive) {
+        res.status(403).json({
+          success: false,
+          message: "Usuario inactivo. No se puede realizar esta acción",
+        });
+        return;
+      }
+
       // Verificar que la contraseña actual coincida con la del body
       const isCurrentPasswordValid = await comparePassword(
         current_password,
@@ -374,6 +401,7 @@ export class AuthController {
         message: "Cambio de contraseña ejecutado exitosamente",
       });
     } catch (error) {
+      console.error(error);
       res.status(400).json({
         success: false,
         message: error.message || "Error al cambiar contraseña",
@@ -383,17 +411,18 @@ export class AuthController {
 
   async clientSession(req, res) {
     try {
-      const { table_id, customer_name, customer_dni } = req.body;
+      const { table_id, customer_name, customer_dni, role } = req.body;
 
       // Validar presencia de campos
       if (
         table_id === undefined ||
         customer_name === undefined ||
-        customer_dni === undefined
+        customer_dni === undefined ||
+        role === undefined
       ) {
         res.status(400).json({
           success: false,
-          message: "table_id, customer_name y customer_dni son requeridos",
+          message: "table_id, customer_name, customer_dni y role son requeridos",
         });
         return;
       }
@@ -425,7 +454,24 @@ export class AuthController {
         res.status(400).json({
           success: false,
           message:
-            "customer_dni debe ser una cédula válida (prefijo opcional V/E/J/P y solo dígitos)",
+            "customer_dni debe ser una cédula válida (prefijo opcional V/E/J/P y solo dígitos, entre 5 y 15 caracteres)",
+        });
+        return;
+      }
+
+      // Validar que role sea un string y que solo acepte el valor "GUEST"
+      if (typeof role !== "string") {
+        res.status(400).json({
+          success: false,
+          message: "role debe ser un string",
+        });
+        return;
+      }
+
+      if (role !== "GUEST") {
+        res.status(400).json({
+          success: false,
+          message: 'role solo puede tener el valor "GUEST"',
         });
         return;
       }
@@ -434,12 +480,14 @@ export class AuthController {
         table_id: tableIdNumber,
         customer_name: normalizedName,
         customer_dni: normalizedDni.toUpperCase(),
+        role: role,
       };
 
       const token = generateToken(tokenPayload);
 
       res.json({ token });
     } catch (error) {
+      console.error(error);
       res.status(400).json({
         success: false,
         message: error.message || "Error al generar sesión de cliente",
@@ -483,6 +531,7 @@ export class AuthController {
         hasPermission: hasPermission === true,
       });
     } catch (error) {
+      console.error(error);
       res.status(400).json({
         success: false,
         message: error.message || "Error al verificar permisos",

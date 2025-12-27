@@ -14,7 +14,6 @@ export function authenticateToken(req, res, next) {
     }
 
     const decoded = verifyToken(token);
-    console.log("DATOS DEL USUARIO LOGUEADO (JWT):", decoded);
     req.user = decoded;
     next();
   } catch (error) {

@@ -1,6 +1,7 @@
 import { validateRole, validatePartialRole } from "../schemas/role.js";
 import { RoleModel } from "../models/role.js";
 import { UserModel } from "../models/user.js";
+import { getFormattedError } from "../utils/erros.js";
 
 export class RoleController {
   constructor() {
@@ -17,13 +18,12 @@ export class RoleController {
       }
 
       const includeUsers = req.query.includeUsers === "true";
-      const roles = await this.roleModel.getAll(includeUsers);
+      const roles = await this.roleModel.getAll({includeUsers});
 
       const result = roles.map((role) => ({
         id: role.id,
         name: role.name,
         description: role.description,
-        isAdmin: false, 
         permissions: (role.permissions || []).map((p) => ({
           id: p.id,
           name: p.name,
@@ -52,7 +52,16 @@ export class RoleController {
  getRoleById = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const role = await this.roleModel.findById({ id });
+    const includeUsers = req.query.includeUsers === "true";
+
+    const hasPermission = req.user.isAdmin || 
+      (await UserModel.checkUserPermission(req.user.id, "Role_seguridad", "Read"));
+
+    if (!hasPermission) {
+      return res.status(403).json({ success: false, message: "No tiene permisos para ver roles" });
+    }
+
+    const role = await this.roleModel.findById({ id, includeUsers });
 
     if (!role) return res.status(404).json({ success: false, message: "Rol no encontrado" });
 
@@ -62,14 +71,21 @@ export class RoleController {
         id: role.id,
         name: role.name,
         description: role.description,
-        isAdmin: false,
         permissions: (role.permissions || []).map((p) => ({
           id: p.id,
           name: p.name,
           type: p.type,        
           resource: p.resource,
           method: p.method
-        }))
+        })),
+        ...(includeUsers && {
+          users: (role.users || []).map((u) => ({
+            id: u.id,
+            name: u.name,
+            lastName: u.lastName,
+            email: u.email
+          }))
+        })
       }
     ];
 
@@ -82,8 +98,7 @@ export class RoleController {
 createRole = async (req, res) => {
   try {
     const hasPermission = req.user.isAdmin || 
-      (await UserModel.checkUserPermission(req.user.id, "Role_seguridad", "Create")) ||
-      (await UserModel.checkUserPermission(req.user.id, "Role_seguridad", "All"));
+      (await UserModel.checkUserPermission(req.user.id, "Role_seguridad", "Create"));
 
     if (!hasPermission) {
       return res.status(403).json({ success: false, message: "No tiene permisos para crear roles" });
@@ -91,7 +106,8 @@ createRole = async (req, res) => {
 
     const result = validateRole(req.body);
     if (!result.success) {
-      return res.status(400).json({ success: false, errors: result.error.format() });
+      const formattedError = getFormattedError(result.error);
+      return res.status(400).json({ success: false, errors: formattedError });
     }
 
     const { name, description, permissions, users } = result.data;
@@ -155,8 +171,7 @@ updateRole = async (req, res) => {
     const { id } = req.params;
 
     const hasPermission = req.user.isAdmin || 
-      (await UserModel.checkUserPermission(req.user.id, "Role_seguridad", "Update")) ||
-      (await UserModel.checkUserPermission(req.user.id, "Role_seguridad", "All"));
+      (await UserModel.checkUserPermission(req.user.id, "Role_seguridad", "Update"));
 
     if (!hasPermission) {
       return res.status(403).json({ success: false, message: "No autorizado para actualizar roles" });
@@ -169,7 +184,8 @@ updateRole = async (req, res) => {
 
     const result = validatePartialRole(req.body);
     if (!result.success) {
-      return res.status(400).json({ success: false, errors: result.error.format() });
+      const formattedError = getFormattedError(result.error);
+      return res.status(400).json({ success: false, errors: formattedError });
     }
 
     const { name, permissions, users } = result.data;
@@ -229,8 +245,7 @@ updateRole = async (req, res) => {
     try {
        
         const hasPermission = req.user.isAdmin || 
-            (await UserModel.checkUserPermission(req.user.id, "Role", "Delete")) ||
-            (await UserModel.checkUserPermission(req.user.id, "Role", "All"));
+            (await UserModel.checkUserPermission(req.user.id, "Role_seguridad", "Delete"));
 
         if (!hasPermission) {
             return res.status(403).json({ success: false, message: "No tiene permisos para eliminar roles" });

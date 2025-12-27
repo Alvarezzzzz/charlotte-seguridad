@@ -1,5 +1,6 @@
 import { validatePermission, validatePartialPermission } from "../schemas/permission.js";
 import { PermissionModel } from "../models/permission.js";
+import { getFormattedError } from "../utils/erros.js";
 import { UserModel } from "../models/user.js";
 
 export class PermissionController {
@@ -10,8 +11,7 @@ export class PermissionController {
   getAllPermissions = async (req, res) => {
     try {
       const hasPermission = req.user.isAdmin || 
-        (await UserModel.checkUserPermission(req.user.id, "Permission", "Read")) ||
-        (await UserModel.checkUserPermission(req.user.id, "Permission", "All"));
+        (await UserModel.checkUserPermission(req.user.id, "Permission_seguridad", "Read"));
 
       if (!hasPermission) {
         return res.status(403).json({ success: false, message: "Sin permisos para ver permisos" });
@@ -36,14 +36,22 @@ export class PermissionController {
 
       return res.json(result);
     } catch (error) {
+      console.error("Error en PermissionController:", error);
       return res.status(500).json({ success: false, message: error.message });
     }
   };
 
   getPermissionById = async (req, res) => {
     try {
+      const includeRole = req.query.includeRole === "true";
       const id = parseInt(req.params.id);
-      const permission = await this.permissionModel.findById({ id });
+      const permission = await this.permissionModel.findById({ id, includeRole });
+
+      const hasPermission = req.user.isAdmin || 
+        (await UserModel.checkUserPermission(req.user.id, "Permission_seguridad", "Read"));
+      if (!hasPermission) {
+        return res.status(403).json({ success: false, message: "Sin permisos para ver permisos" });
+      }
 
       if (!permission) return res.status(404).json({ success: false, message: "No existe" });
 
@@ -53,9 +61,15 @@ export class PermissionController {
         type: permission.type,
         resource: permission.resource,
         method: permission.method,
-        role: { id: permission.role?.id, name: permission.role?.name }
+        ...(includeRole && permission.role && {
+          role: {
+            id: permission.role.id,
+            name: permission.role.name
+          }
+        })
       });
     } catch (error) {
+      console.error("Error en GET Permission by ID:", error);
       return res.status(500).json({ success: false, message: error.message });
     }
   };
@@ -63,8 +77,7 @@ export class PermissionController {
   createPermission = async (req, res) => {
   try {
     const hasPermission = req.user.isAdmin || 
-      (await UserModel.checkUserPermission(req.user.id, "Permission", "Create")) ||
-      (await UserModel.checkUserPermission(req.user.id, "Permission", "All"));
+      (await UserModel.checkUserPermission(req.user.id, "Permission_seguridad", "Create"));
 
     if (!hasPermission) {
       return res.status(403).json({ success: false, message: "No tiene permisos" });
@@ -72,7 +85,8 @@ export class PermissionController {
 
     const result = validatePermission(req.body);
     if (!result.success) {
-      return res.status(400).json({ success: false, errors: result.error.format() });
+      const formattedError = getFormattedError(result.error); 
+      return res.status(400).json({ success: false, errors: formattedError });
     }
 
     const { roleId, resource, method } = result.data;
@@ -119,8 +133,7 @@ export class PermissionController {
   try {
   
     const hasPermission = req.user.isAdmin || 
-      (await UserModel.checkUserPermission(req.user.id, "Permission", "Update")) ||
-      (await UserModel.checkUserPermission(req.user.id, "Permission", "All"));
+      (await UserModel.checkUserPermission(req.user.id, "Permission", "Update"));
 
     if (!hasPermission) {
       return res.status(403).json({ success: false, message: "No autorizado para actualizar permisos" });
@@ -135,7 +148,8 @@ export class PermissionController {
 
     const result = validatePartialPermission(req.body);
     if (!result.success) {
-      return res.status(400).json({ success: false, errors: result.error.format() });
+      const formattedError = getFormattedError(result.error);
+      return res.status(400).json({ success: false, errors: formattedError });
     }
 
     if (result.data.roleId) {
@@ -146,6 +160,27 @@ export class PermissionController {
       if (!roleExists) {
         return res.status(404).json({ success: false, message: "El nuevo Rol asociado no existe" });
       }
+    }
+
+    const existingPermission = await this.permissionModel.findById({ id: Number(id) });
+    const newResource = result.data.resource || existingPermission.resource;
+    const newMethod = result.data.method || existingPermission.method;
+    const newRoleId = result.data.roleId || existingPermission.roleId;
+    const { prisma } = await import("../db/client.js");
+
+    const duplicatePermission = await prisma.permission.findFirst({
+      where: {
+        resource: newResource,
+        method: newMethod,
+        roleId: newRoleId
+      }
+    });
+
+    if (duplicatePermission && duplicatePermission.id !== Number(id)) {
+      return res.status(409).json({ 
+        success: false, 
+        message: `Ya existe un permiso de tipo ${newMethod} para el recurso ${newResource} en este rol.` 
+      });
     }
 
     const updatedPermission = await this.permissionModel.update({
@@ -171,9 +206,19 @@ export class PermissionController {
   deletePermission = async (req, res) => {
     try {
       const id = parseInt(req.params.id);
+      const hasPermission =
+        (await UserModel.checkUserPermission(req.user.id, "Permission_seguridad", "Delete"));
+      if (!hasPermission) {
+        return res.status(403).json({ success: false, message: "No autorizado para eliminar permisos" });
+      }
+      const permissionExists = await this.permissionModel.findById({ id });
+      if (!permissionExists) {
+        return res.status(404).json({ success: false, message: "El permiso no existe" });
+      }
       await this.permissionModel.delete({ id });
       return res.json({ message: "Permiso Eliminado exitosamente" });
     } catch (error) {
+      console.error("Error en DELETE Permission:", error);
       return res.status(400).json({ success: false, message: "No se pudo eliminar" });
     }
   };
