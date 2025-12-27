@@ -6,6 +6,7 @@ import { createPermissionRouter } from "./routes/permission.js";
 import { createProductRouter } from "./routes/product.js";
 import { createAuthRouter } from "./routes/auth.js";
 import { createRestaurantRouter } from "./routes/restaurants.js";
+import { createEnumRouter } from "./routes/enum.js";
 import { corsMiddleware } from "./middlewares/cors.js";
 import { sessionMiddleware } from "./middlewares/session.js";
 
@@ -22,6 +23,7 @@ app.use("/api/seguridad/roles", createRoleRouter());
 app.use("/api/seguridad/permissions", createPermissionRouter());
 app.use("/api/seguridad/products", createProductRouter());
 app.use("/api/seguridad/restaurants", createRestaurantRouter());
+app.use("/api/seguridad/enums", createEnumRouter());
 app.listen(PORT, () => {
   console.log(`Server is running in http://localhost:${PORT}`);
 });
