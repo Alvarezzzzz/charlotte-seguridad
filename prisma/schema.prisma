@@ -28,6 +28,7 @@ enum Resource {
   Permission_seguridad
   // Tablas de cocina 
   KitchenCategory_cocina
+  KitchenProduct_cocina
   Recipe_cocina
   InventoryItem_cocina
   InventoryLog_cocina
