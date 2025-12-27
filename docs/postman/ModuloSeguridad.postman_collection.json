@@ -5305,6 +5305,422 @@
 					]
 				}
 			]
+		},
+		{
+			"name": "Enums",
+			"item": [
+				{
+					"name": "User dataType",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": [
+						{
+							"name": "200",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"password\": \"nuevacontraseñasupersecreta\",\r\n  \"dataType\": \"Dp\",\r\n  \"isActive\": false,\r\n  \"isAdmin\": true,\r\n  \"roles\": [1]\r\n}"
+								},
+								"url": {
+									"raw": "{{url_auth}}/api/seguridad/enums/User/dataType",
+									"host": [
+										"{{url_auth}}"
+									],
+									"path": [
+										"api",
+										"seguridad",
+										"enums",
+										"User",
+										"dataType"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Date",
+									"value": "Sat, 27 Dec 2025 22:38:37 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "20"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "CF-RAY",
+									"value": "9b4c4f2c494bf436-MIA"
+								},
+								{
+									"key": "Content-Encoding",
+									"value": "br"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"10-lJ4zwY0eLAZpFQIFau8BTlhxTSE\""
+								},
+								{
+									"key": "rndr-id",
+									"value": "9692e6e3-057e-458a"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "x-render-origin-server",
+									"value": "Render"
+								},
+								{
+									"key": "cf-cache-status",
+									"value": "DYNAMIC"
+								},
+								{
+									"key": "Server",
+									"value": "cloudflare"
+								},
+								{
+									"key": "alt-svc",
+									"value": "h3=\":443\"; ma=86400"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    \"Kitchen\",\n    \"Dp\"\n]"
+						}
+					]
+				},
+				{
+					"name": "Permission type",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_auth}}/api/seguridad/enums/Permission/type",
+							"host": [
+								"{{url_auth}}"
+							],
+							"path": [
+								"api",
+								"seguridad",
+								"enums",
+								"Permission",
+								"type"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url_auth}}/api/seguridad/enums/Permission/type",
+									"host": [
+										"{{url_auth}}"
+									],
+									"path": [
+										"api",
+										"seguridad",
+										"enums",
+										"Permission",
+										"type"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Date",
+									"value": "Sat, 27 Dec 2025 22:39:11 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "23"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "CF-RAY",
+									"value": "9b4c50002d9af436-MIA"
+								},
+								{
+									"key": "Content-Encoding",
+									"value": "br"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"13-zTbHKy4E5WPyr8Ccr3yHcHM9TCY\""
+								},
+								{
+									"key": "rndr-id",
+									"value": "8d73bc2a-0ed4-42ce"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "x-render-origin-server",
+									"value": "Render"
+								},
+								{
+									"key": "cf-cache-status",
+									"value": "DYNAMIC"
+								},
+								{
+									"key": "Server",
+									"value": "cloudflare"
+								},
+								{
+									"key": "alt-svc",
+									"value": "h3=\":443\"; ma=86400"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    \"View\",\n    \"Resource\"\n]"
+						}
+					]
+				},
+				{
+					"name": "Permission resource",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_auth}}/api/seguridad/enums/Permission/resource",
+							"host": [
+								"{{url_auth}}"
+							],
+							"path": [
+								"api",
+								"seguridad",
+								"enums",
+								"Permission",
+								"resource"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url_auth}}/api/seguridad/enums/Permission/resource",
+									"host": [
+										"{{url_auth}}"
+									],
+									"path": [
+										"api",
+										"seguridad",
+										"enums",
+										"Permission",
+										"resource"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Date",
+									"value": "Sat, 27 Dec 2025 22:39:39 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "370"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "CF-RAY",
+									"value": "9b4c50ae7bf4f436-MIA"
+								},
+								{
+									"key": "Content-Encoding",
+									"value": "br"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"324-4oGYxvG+HAvWgivGeJDD0BgJvrc\""
+								},
+								{
+									"key": "rndr-id",
+									"value": "bd73b4cd-f538-44d9"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "x-render-origin-server",
+									"value": "Render"
+								},
+								{
+									"key": "cf-cache-status",
+									"value": "DYNAMIC"
+								},
+								{
+									"key": "Server",
+									"value": "cloudflare"
+								},
+								{
+									"key": "alt-svc",
+									"value": "h3=\":443\"; ma=86400"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"Resources\": [\n        \"Restaurant_seguridad\",\n        \"User_seguridad\",\n        \"Role_seguridad\",\n        \"Permission_seguridad\",\n        \"KitchenCategory_cocina\",\n        \"KitchenProduct_cocina\",\n        \"Recipe_cocina\",\n        \"InventoryItem_cocina\",\n        \"InventoryLog_cocina\",\n        \"KitchenAsset_cocina\",\n        \"AssetLog_cocina\",\n        \"KitchenStaff_cocina\",\n        \"StaffShift_cocina\",\n        \"KdsProducionQueue_cocina\",\n        \"KpiMetas_kpi\",\n        \"KpiReglaSemaforo_kpi\",\n        \"KpiSnapshotDiario_kpi\",\n        \"KpiAlertaHistorial_kpi\",\n        \"KpiAuditoriaExport_kpi\",\n        \"Table_atc\",\n        \"ClienteTemporal_atc\",\n        \"Comanda_atc\",\n        \"OrderItem_atc\",\n        \"ServiceRequest_atc\",\n        \"Zones_dp\",\n        \"Thresholds_dp\",\n        \"Managers_dp\",\n        \"Notes_dp\",\n        \"NotesItems_dp\",\n        \"Logs_dp\"\n    ],\n    \"Views\": [\n        \"ResourceManager_view\",\n        \"KdsProduction_view\",\n        \"WaiterStaff_view\",\n        \"KitechenStaffShift_view\",\n        \"DeliveryPickup_view\",\n        \"KpiDashboard_view\",\n        \"UserManagement_view\",\n        \"RestaurantCoordinates_view\",\n        \"TableManagement_view\"\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Permission method",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_auth}}/api/seguridad/enums/Permission/method",
+							"host": [
+								"{{url_auth}}"
+							],
+							"path": [
+								"api",
+								"seguridad",
+								"enums",
+								"Permission",
+								"method"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url_auth}}/api/seguridad/enums/Permission/method",
+									"host": [
+										"{{url_auth}}"
+									],
+									"path": [
+										"api",
+										"seguridad",
+										"enums",
+										"Permission",
+										"method"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Date",
+									"value": "Sat, 27 Dec 2025 22:40:13 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "67"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "CF-RAY",
+									"value": "9b4c5181ea27f436-MIA"
+								},
+								{
+									"key": "Content-Encoding",
+									"value": "br"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"45-nU5+K1BODUn2cOCwrJvkx1quXv0\""
+								},
+								{
+									"key": "rndr-id",
+									"value": "0cf41363-d394-42e8"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "x-render-origin-server",
+									"value": "Render"
+								},
+								{
+									"key": "cf-cache-status",
+									"value": "DYNAMIC"
+								},
+								{
+									"key": "Server",
+									"value": "cloudflare"
+								},
+								{
+									"key": "alt-svc",
+									"value": "h3=\":443\"; ma=86400"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"Methods\": [\n        \"Create\",\n        \"Read\",\n        \"Update\",\n        \"Delete\",\n        \"All\"\n    ],\n    \"View\": [\n        \"View\"\n    ]\n}"
+						}
+					]
+				}
+			]
 		}
 	]
 }
