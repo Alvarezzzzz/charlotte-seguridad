@@ -55,9 +55,9 @@ export class AuthController {
         name: user.name,
         lastName: user.lastName,
         email: user.email,
-        address: user.address || undefined,
-        phone: user.phone || undefined,
-        dataType: user.dataType || undefined,
+        address: user.address,
+        phone: user.phone,
+        dataType: user.dataType,
         birthDate: user.birthDate.toISOString().split("T")[0],
         dni: user.dni,
         isAdmin: user.isAdmin,
@@ -69,6 +69,7 @@ export class AuthController {
 
       res.json({ token });
     } catch (error) {
+      console.error(error);
       res.status(500).json({
         success: false,
         message: error.message || "Error al iniciar sesión",
@@ -167,6 +168,7 @@ export class AuthController {
 
       res.json(result);
     } catch (error) {
+      console.error(error);
       res.status(400).json({
         success: false,
         message: error.message || "Error al obtener roles",
@@ -223,6 +225,7 @@ export class AuthController {
         },
       });
     } catch (error) {
+      console.error(error);
       res.status(400).json({
         success: false,
         message: error.message || "Error al verificar ubicación",
@@ -239,7 +242,6 @@ export class AuthController {
         });
         return;
       }
-
       const { user_id, new_password } = req.body;
 
       if (!user_id || !new_password) {
@@ -250,9 +252,7 @@ export class AuthController {
         return;
       }
 
-      // Verificar permisos según especificaciones:
-      // - isAdmin: true, O
-      // - type: "RESOURCE", resource: "User_seguridad", method: "UPDATE" o "ALL"
+
       let hasPermission = false;
 
       if (req.user.isAdmin) {
@@ -271,11 +271,9 @@ export class AuthController {
         });
 
         if (user) {
-          // Iterar sobre los permisos de todos los roles del usuario
           for (const role of user.roles) {
             for (const permission of role.permissions) {
-              // Verificar según especificaciones: type="RESOURCE", resource="User_seguridad", method="UPDATE" o "ALL"
-              // Nota: También aceptamos "RECURSO" por compatibilidad con la BD actual
+
               const isValidType = permission.type === "Resource";
               const isValidResource =
                 permission.resource === "User_seguridad" ||
@@ -327,6 +325,7 @@ export class AuthController {
         message: "Cambio de contraseña ejecutado exitosamente",
       });
     } catch (error) {
+      console.error(error);
       res.status(400).json({
         success: false,
         message: error.message || "Error al cambiar contraseña",
@@ -402,6 +401,7 @@ export class AuthController {
         message: "Cambio de contraseña ejecutado exitosamente",
       });
     } catch (error) {
+      console.error(error);
       res.status(400).json({
         success: false,
         message: error.message || "Error al cambiar contraseña",
@@ -454,7 +454,7 @@ export class AuthController {
         res.status(400).json({
           success: false,
           message:
-            "customer_dni debe ser una cédula válida (prefijo opcional V/E/J/P y solo dígitos)",
+            "customer_dni debe ser una cédula válida (prefijo opcional V/E/J/P y solo dígitos, entre 5 y 15 caracteres)",
         });
         return;
       }
@@ -487,6 +487,7 @@ export class AuthController {
 
       res.json({ token });
     } catch (error) {
+      console.error(error);
       res.status(400).json({
         success: false,
         message: error.message || "Error al generar sesión de cliente",
@@ -530,6 +531,7 @@ export class AuthController {
         hasPermission: hasPermission === true,
       });
     } catch (error) {
+      console.error(error);
       res.status(400).json({
         success: false,
         message: error.message || "Error al verificar permisos",

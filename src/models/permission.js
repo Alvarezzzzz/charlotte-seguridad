@@ -11,10 +11,10 @@ export class PermissionModel {
   }
 
 
-  async findById({ id }) {
+  async findById({ id, includeRole = false }) {
     return await prisma.permission.findUnique({
       where: { id: Number(id) },
-      include: { role: true },
+      include: { role: includeRole },
     });
   }
 

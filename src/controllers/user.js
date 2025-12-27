@@ -1,6 +1,7 @@
 import { validateUser, validatePartialUser } from "../schemas/user.js";
 import { UserModel } from "../models/user.js";
 import { validatePassword } from "../utils/password.js";
+import { getFormattedError } from "../utils/erros.js";
 import { DataType } from "@prisma/client";
 
 export class UserController {
@@ -37,10 +38,11 @@ export class UserController {
 
       if (!result.success) {
         console.log(result.error);
+        const formattedErrors = getFormattedError(result.error);
         res.status(400).json({
           success: false,
           message: "Datos inválidos",
-          errors: result.error.errors,
+          errors: formattedErrors,
         });
         return;
       }
@@ -202,6 +204,7 @@ export class UserController {
         })),
       });
     } catch (error) {
+      console.error(error);
       res.status(500).json({
         success: false,
         message: error.message || "Error al obtener usuario",
@@ -249,10 +252,12 @@ export class UserController {
       const result = validatePartialUser(req.body);
 
       if (!result.success) {
+        console.log(result.error);
+        const formattedErrors = getFormattedError(result.error);
         res.status(400).json({
           success: false,
           message: "Datos inválidos",
-          errors: result.error.errors,
+          errors: formattedErrors,
         });
         return;
       }
@@ -309,6 +314,15 @@ export class UserController {
         }
       }
 
+      // Verifica si es el usuario admin para no permitir desactivarlo
+      if (existingUser.isAdmin && isActive === false) {
+        res.status(403).json({
+          success: false,
+          message: "No se puede desactivar el usuario administrador",
+        });
+        return;
+      }
+
       await UserModel.update(id, {
         ...userData,
         ...(email && { email }),
@@ -323,6 +337,7 @@ export class UserController {
         user_id: id,
       });
     } catch (error) {
+      console.error(error);
       if (error.code === "P2002") {
         res.status(400).json({
           success: false,
@@ -399,6 +414,7 @@ export class UserController {
         message: "Usuario Eliminado exitosamente",
       });
     } catch (error) {
+      console.error(error);
       res.status(400).json({
         success: false,
         message: error.message || "Error al eliminar usuario",
@@ -478,6 +494,7 @@ export class UserController {
 
       res.json(result);
     } catch (error) {
+      console.error(error);
       res.status(500).json({
         success: false,
         message: error.message || "Error al obtener usuarios",
@@ -496,15 +513,23 @@ export class UserController {
         });
         return;
       }
+      if (req.body.password || req.body.isActive || req.body.roles || req.body.dataType) {
+        res.status(400).json({
+          success: false,
+          message: "No se puede cambiar la contraseña o el estado isActive o los roles o el dataType por este endpoint",
+        });
+        return;
+      }
 
       // Validar datos del body
       const result = validatePartialUser(req.body);
 
       if (!result.success) {
+        const formattedErrors = getFormattedError(result.error);
         res.status(400).json({
           success: false,
           message: "Datos inválidos para la actualización del usuario",
-          errors: result.error.errors,
+          errors: formattedErrors,
         });
         return;
       }
@@ -519,26 +544,10 @@ export class UserController {
         return;
       }
 
+
       const { roles, birthDate, password, email, dni, isActive, ...userData } =
         result.data;
-
-      // No permitir cambio de contraseña por este endpoint
-      if (password) {
-        res.status(400).json({
-          success: false,
-          message: "No se puede cambiar la contraseña por este endpoint",
-        });
-        return;
-      }
-
-      // No permitir cambio de isActive por este endpoint
-      if (isActive !== undefined) {
-        res.status(400).json({
-          success: false,
-          message: "No se puede actualizar el atributo isActive por este endpoint",
-        });
-        return;
-      }
+      
 
       // Validar que el email no esté en uso (solo si se está actualizando)
       if (email && email !== existingUser.email) {
@@ -564,29 +573,12 @@ export class UserController {
         }
       }
 
-      // Verificar roles si se proporcionan
-      if (roles && roles.length > 0) {
-        const { prisma } = await import("../db/client.js");
-        const existingRoles = await prisma.role.findMany({
-          where: { id: { in: roles } },
-        });
-
-        if (existingRoles.length !== roles.length) {
-          res.status(400).json({
-            success: false,
-            message: "Uno o más roles no existen",
-          });
-          return;
-        }
-      }
-
       // Actualizar el usuario
       const updatedUser = await UserModel.update(req.user.id, {
         ...userData,
         ...(email && { email }),
         ...(dni && { dni }),
         ...(birthDate && { birthDate: new Date(birthDate) }),
-        roles: roles || undefined,
       });
 
       // Generar nuevo token con los datos actualizados
@@ -612,6 +604,7 @@ export class UserController {
         token: newToken,
       });
     } catch (error) {
+      console.error(error);
       if (error.code === "P2002") {
         res.status(400).json({
           success: false,
