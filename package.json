@@ -8,7 +8,11 @@
     "build": "prisma generate",
     "dev": "node --watch src/index.js",
     "start": "node src/index.js",
-    "seed:cocina": "node prisma/cocinaSeed.js"
+    "seed:cocina": "node prisma/cocinaSeed.js",
+    "seed:atc": "node prisma/atcSeed.js",
+    "seed:dp": "node prisma/dpSeed.js",
+    "seed:admin": "node prisma/adminSeed.js",
+    "seed:seguridad": "node prisma/seguridadSeed.js"
   },
   "author": "@jess-render",
   "license": "ISC",
