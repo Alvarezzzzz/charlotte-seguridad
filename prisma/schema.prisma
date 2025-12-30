@@ -36,7 +36,7 @@ enum Resource {
   AssetLog_cocina
   KitchenStaff_cocina
   StaffShift_cocina
-  KdsProducionQueue_cocina
+  KdsProductionQueue_cocina
   // Tablas de kpi (Ojo estas pueden cambiar pq todavia andan cambiando los nombres de las tablas)
   KpiMetas_kpi
   KpiReglaSemaforo_kpi

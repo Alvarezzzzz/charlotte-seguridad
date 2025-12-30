@@ -7,7 +7,8 @@
   "scripts": {
     "build": "prisma generate",
     "dev": "node --watch src/index.js",
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "seed:cocina": "node prisma/cocinaSeed.js"
   },
   "author": "@jess-render",
   "license": "ISC",
