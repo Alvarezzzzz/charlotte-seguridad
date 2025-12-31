@@ -94,7 +94,14 @@ async function main() {
     { 
       resource: Resource.ClienteTemporal_atc, 
       methods: [Method.Read] 
-    }
+    },
+
+    // Permisos de vistas
+    {
+      resource: Resource.TableManagement_view,
+      methods: [Method.View]
+    },
+    
   ];
 
   const gerenteUser = {
@@ -121,7 +128,13 @@ async function main() {
     { 
       resource: Resource.Table_atc, 
       methods: [Method.Read, Method.Update] 
-    }
+    },
+
+    // Permisos de vistas
+    {
+      resource: Resource.TableManagement_view,
+      methods: [Method.View]
+    },
   ];
 
   const maitreUser = {

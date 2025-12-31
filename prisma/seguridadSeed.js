@@ -99,6 +99,10 @@ async function main() {
     { 
       resource: Resource.Permission_seguridad, 
       methods: [Method.All] 
+    },
+    {
+      resource: Resource.UserManagement_view,
+      methods: [Method.View]
     }
   ];
 
@@ -126,6 +130,11 @@ async function main() {
     { 
       resource: Resource.Restaurant_seguridad, 
       methods: [Method.Read, Method.Create, Method.Update] 
+    },
+    // Permisos de vistas
+    {
+      resource: Resource.RestaurantCoordinates_view,
+      methods: [Method.View]
     }
   ];
 

@@ -127,6 +127,32 @@ async function main() {
       resource: Resource.StaffShift_cocina,
       methods: [Method.Create, Method.Read, Method.Update]
     },
+
+    // Permisos de vistas
+    {
+      resource: Resource.KdsProductionQueue_view,
+      methods: [Method.View]
+    },
+    {
+      resource: Resource.ConsumibleInventory_view,
+      methods: [Method.View]
+    },
+    {
+      resource: Resource.FixedAssetManagement_view,
+      methods: [Method.View]
+    },
+    {
+      resource: Resource.RecipeProductCatalog_view,
+      methods: [Method.View]
+    }, 
+    {
+      resource: Resource.StaffShiftSheduler_view,
+      methods: [Method.View]
+    },
+    {
+      resource: Resource.KitchenStaffManagement_view,
+      methods: [Method.View]
+    }
   ];
 
   const headChefUser = {
@@ -181,7 +207,20 @@ async function main() {
     {
       resource: Resource.StaffShift_cocina,
       methods: [Method.Create, Method.Update]
+    }, 
+    // Permisos de vistas
+    {
+      resource: Resource.KdsProductionQueue_view,
+      methods: [Method.View]
     },
+    {
+      resource: Resource.ConsumibleInventory_view,
+      methods: [Method.View]
+    },
+    {
+      resource: Resource.FixedAssetManagement_view,
+      methods: [Method.View]
+    }, 
   ];
 
   const chefUser = {
@@ -225,6 +264,23 @@ async function main() {
       resource: Resource.StaffShift_cocina,
       methods: [Method.Create, Method.Read, Method.Update]
     },
+    // Permisos de vistas
+    {
+      resource: Resource.WaitersOffice_view,
+      methods: [Method.View]
+    },
+    {
+      resource: Resource.FixedAssetManagement_view,
+      methods: [Method.View]
+    },
+     {
+      resource: Resource.StaffShiftSheduler_view,
+      methods: [Method.View]
+    },
+    {
+      resource: Resource.KitchenStaffManagement_view,
+      methods: [Method.View]
+    }
   ];
 
   const headWaiterUser = {
@@ -250,12 +306,22 @@ async function main() {
   const waiterPermissions = [
     {
       resource: Resource.KdsProductionQueue_cocina,
-      methods: [Method.Read, Method.Update] // Update = Marcar Servido
+      methods: [Method.Read, Method.Update] 
     },
     {
       resource: Resource.StaffShift_cocina,
       methods: [Method.Create, Method.Update]
     },
+
+    // Permisos de vistas
+    {
+      resource: Resource.WaitersOffice_view,
+      methods: [Method.View]
+    },
+    {
+      resource: Resource.FixedAssetManagement_view,
+      methods: [Method.View]
+    }
   ];
 
   const waiterUser = {

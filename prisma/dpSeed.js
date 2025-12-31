@@ -93,11 +93,11 @@ async function main() {
     },
     { 
       resource: Resource.Notes_dp, 
-      methods: [Method.Update] 
+      methods: [Method.Update, Method.Create] 
     },
     { 
-      resource: Resource.NotesItems_dp, 
-      methods: [Method.Update, Method.Delete] 
+      resource: Resource.NotesItems_dp,
+      methods: [Method.Update, Method.Delete]
     },
     { 
       resource: Resource.Logs_dp, 
@@ -111,6 +111,11 @@ async function main() {
       resource: Resource.Managers_dp, 
       methods: [Method.Create, Method.Read, Method.Update, Method.Delete] 
     },
+    // Permisos de vistas
+    {
+      resource: Resource.DeliveryPickup_view,
+      methods: [Method.View]
+    }
   ];
 
   const gerenteDpUser = {
@@ -140,7 +145,7 @@ async function main() {
     },
     { 
       resource: Resource.Notes_dp, 
-      methods: [Method.Update] 
+      methods: [Method.Update, Method.Create] 
     },
     { 
       resource: Resource.NotesItems_dp, 
@@ -158,6 +163,10 @@ async function main() {
       resource: Resource.Managers_dp, 
       methods: [Method.Read, Method.Update] 
     },
+    {
+      resource: Resource.DeliveryPickup_view,
+      methods: [Method.View]
+    }
   ];
 
   const supervisorDpUser = {

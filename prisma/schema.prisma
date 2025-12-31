@@ -60,10 +60,14 @@ enum Resource {
   // Vistas
 
   // Vistas de cocina
-  ResourceManager_view
-  KdsProduction_view
-  WaiterStaff_view
-  KitechenStaffShift_view
+  KdsProductionQueue_view
+  ConsumibleInventory_view
+  RecipeProductCatalog_view
+  FixedAssetManagement_view
+  AuditTransactionLog_view
+  WaitersOffice_view
+  StaffShiftSheduler_view
+  KitchenStaffManagement_view
 
   // Vistas de Delivery y Pickup
   DeliveryPickup_view
