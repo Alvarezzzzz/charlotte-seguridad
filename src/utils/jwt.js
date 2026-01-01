@@ -1,11 +1,12 @@
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || 'default-secret-change-in-production';
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
+const JWT_SECRET =
+  process.env.JWT_SECRET || "default-secret-change-in-production";
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "24h";
 
-export function generateToken(payload) {
+export function generateToken(payload, expiresIn = JWT_EXPIRES_IN) {
   return jwt.sign(payload, JWT_SECRET, {
-    expiresIn: JWT_EXPIRES_IN,
+    expiresIn: expiresIn,
   });
 }
 
@@ -14,7 +15,8 @@ export function verifyToken(token) {
     const decoded = jwt.verify(token, JWT_SECRET);
     return decoded;
   } catch (error) {
-    throw new Error('Token inválido o expirado');
+    console.error(error);
+    throw new Error("Token inválido o expirado");
   }
 }
 
@@ -25,5 +27,3 @@ export function decodeToken(token) {
     return null;
   }
 }
-
-

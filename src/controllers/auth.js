@@ -1,5 +1,5 @@
 import { UserModel } from "../models/user.js";
-import { generateToken } from "../utils/jwt.js";
+import { generateToken, verifyToken } from "../utils/jwt.js";
 import { comparePassword, validatePassword } from "../utils/password.js";
 import { prisma } from "../db/client.js";
 import { validateHasPermission } from "../schemas/auth.js";
@@ -213,16 +213,31 @@ export class AuthController {
         restLon,
         restRadius
       );
-
-      res.json({
+      if (is_inside) {
+        const locationToken = generateToken(
+          {
+            is_inside: true,
+          },
+          "10min"
+        );
+        const locationRefreshToken = generateToken(
+          {
+            is_inside: true,
+          },
+          "30min"
+        );
+        return res.json({
+          locationToken,
+          locationRefreshToken,
+          is_inside,
+          latitude,
+          longitude,
+        });
+      }
+      return res.json({
         is_inside,
         latitude,
         longitude,
-        restaurant: {
-          latitude: restLat,
-          longitude: restLon,
-          radius: restRadius,
-        },
       });
     } catch (error) {
       console.error(error);
@@ -252,7 +267,6 @@ export class AuthController {
         return;
       }
 
-
       let hasPermission = false;
 
       if (req.user.isAdmin) {
@@ -273,7 +287,6 @@ export class AuthController {
         if (user) {
           for (const role of user.roles) {
             for (const permission of role.permissions) {
-
               const isValidType = permission.type === "Resource";
               const isValidResource =
                 permission.resource === "User_seguridad" ||
@@ -422,7 +435,8 @@ export class AuthController {
       ) {
         res.status(400).json({
           success: false,
-          message: "table_id, customer_name, customer_dni y role son requeridos",
+          message:
+            "table_id, customer_name, customer_dni y role son requeridos",
         });
         return;
       }
@@ -535,6 +549,67 @@ export class AuthController {
       res.status(400).json({
         success: false,
         message: error.message || "Error al verificar permisos",
+      });
+    }
+  }
+
+  async verifyLocationToken(req, res) {
+    try {
+      const { locationToken, locationRefreshToken } = req.body;
+      let decoded;
+      let decodedRefresh;
+
+      if (!locationToken) {
+        res.status(400).json({
+          success: false,
+          message: "locationToken es requerido",
+        });
+        return;
+      }
+      try {
+        decoded = verifyToken(locationToken);
+      } catch (error) {
+        // Token inválido o expirado
+      }
+      if (!decoded) {
+        try {
+          decodedRefresh = verifyToken(locationRefreshToken);
+        } catch (error) {
+          // Token inválido o expirado
+        }
+        if (!decodedRefresh) {
+          return res.status(401).json({
+            is_inside: false,
+            message: "Tokens de ubicación inválidos o expirados",
+          });
+        }
+
+        const newLocationToken = generateToken(
+          {
+            is_inside: true,
+          },
+          "10min"
+        );
+        const newRefreshToken = generateToken(
+          {
+            is_inside: true,
+          },
+          "30min"
+        );
+        return res.json({
+          locationToken: newLocationToken,
+          locationRefreshToken: newRefreshToken,
+          is_inside: true,
+        });
+      }
+      res.json({
+        is_inside: true,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({
+        success: false,
+        message: error.message || "Error al verificar token de ubicación",
       });
     }
   }

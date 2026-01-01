@@ -48,5 +48,11 @@ export const createAuthRouter = () => {
     authenticateToken,
     authController.hasPermission.bind(authController)
   );
+
+  router.post(
+    "/verifyLocationToken",
+    authController.verifyLocationToken.bind(authController)
+  );
+
   return router;
 };
