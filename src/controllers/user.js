@@ -131,31 +131,6 @@ export class UserController {
 
   getUserById = async (req, res) => {
     try {
-      if (!req.user) {
-        res.status(401).json({
-          success: false,
-          message: "Usuario no autenticado",
-        });
-        return;
-      }
-
-      // Verificar permisos
-      const hasPermission =
-        req.user.isAdmin ||
-        (await UserModel.checkUserPermission(
-          req.user.id,
-          "User_seguridad",
-          "Read"
-        ));
-
-      if (!hasPermission) {
-        res.status(403).json({
-          success: false,
-          message: "No tiene permisos para ver usuarios",
-        });
-        return;
-      }
-
       const id = parseInt(req.params.id);
 
       if (isNaN(id)) {
@@ -272,7 +247,8 @@ export class UserController {
         return;
       }
 
-      const { roles, birthDate, email, dni, isActive, ...userData } = result.data;
+      const { roles, birthDate, email, dni, isActive, ...userData } =
+        result.data;
 
       // Validar que el email no esté en uso (solo si se está actualizando)
       if (email && email !== existingUser.email) {
@@ -513,10 +489,16 @@ export class UserController {
         });
         return;
       }
-      if (req.body.password || req.body.isActive || req.body.roles || req.body.dataType) {
+      if (
+        req.body.password ||
+        req.body.isActive ||
+        req.body.roles ||
+        req.body.dataType
+      ) {
         res.status(400).json({
           success: false,
-          message: "No se puede cambiar la contraseña o el estado isActive o los roles o el dataType por este endpoint",
+          message:
+            "No se puede cambiar la contraseña o el estado isActive o los roles o el dataType por este endpoint",
         });
         return;
       }
@@ -544,10 +526,8 @@ export class UserController {
         return;
       }
 
-
       const { roles, birthDate, password, email, dni, isActive, ...userData } =
         result.data;
-      
 
       // Validar que el email no esté en uso (solo si se está actualizando)
       if (email && email !== existingUser.email) {
