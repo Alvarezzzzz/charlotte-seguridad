@@ -247,7 +247,7 @@ export class UserController {
         return;
       }
 
-      const { roles, birthDate, email, dni, isActive, ...userData } =
+      const { roles, birthDate, email, dni, isActive, password, ...userData } =
         result.data;
 
       // Validar que el email no esté en uso (solo si se está actualizando)
@@ -299,10 +299,22 @@ export class UserController {
         return;
       }
 
+      if (password) {
+        const passwordValidation = validatePassword(password);
+        if (!passwordValidation.valid) {
+          res.status(400).json({
+            success: false,
+            message: passwordValidation.message,
+          });
+          return;
+        }
+      }
+
       await UserModel.update(id, {
         ...userData,
         ...(email && { email }),
         ...(dni && { dni }),
+        ...(password && { password }),
         ...(birthDate && { birthDate: new Date(birthDate) }),
         ...(isActive !== undefined && { isActive }),
         roles: roles || undefined,

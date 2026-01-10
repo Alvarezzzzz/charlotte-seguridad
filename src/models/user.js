@@ -54,7 +54,12 @@ export class UserModel {
   }
 
   static async update(id, data) {
-    const { roles, ...userData } = data;
+    const { roles, password, ...userData } = data;
+
+    if (password) {
+      const hashedPassword = await hashPassword(password);
+      userData.password = hashedPassword;
+    }
 
     return prisma.user.update({
       where: { id: parseInt(id) },
