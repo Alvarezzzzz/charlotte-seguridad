@@ -5305,6 +5305,74 @@
 					]
 				}
 			]
+		},
+		{
+			"name": "Enum",
+			"item": [
+				{
+					"name": "Enums User DataType Get",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_auth}}/api/seguridad/enums/User/dataType",
+							"host": [
+								"{{url_auth}}"
+							],
+							"path": [
+								"api",
+								"seguridad",
+								"enums",
+								"User",
+								"dataType"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200 - DataType Options",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url_auth}}/api/seguridad/enums/User/dataType",
+									"host": [
+										"{{url_auth}}"
+									],
+									"path": [
+										"api",
+										"seguridad",
+										"enums",
+										"User",
+										"dataType"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    \"Kitchen\",\n    \"Dp\"\n]"
+						}
+					]
+				}
+			]
 		}
 	]
 }
