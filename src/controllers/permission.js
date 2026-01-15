@@ -133,7 +133,7 @@ export class PermissionController {
   try {
   
     const hasPermission = req.user.isAdmin || 
-      (await UserModel.checkUserPermission(req.user.id, "Permission", "Update"));
+      (await UserModel.checkUserPermission(req.user.id, "Permission_seguridad", "Update"));
 
     if (!hasPermission) {
       return res.status(403).json({ success: false, message: "No autorizado para actualizar permisos" });

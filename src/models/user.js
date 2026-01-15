@@ -135,7 +135,6 @@ export class UserModel {
         },
       },
     });
-
     if (!user) {
       return false;
     }
