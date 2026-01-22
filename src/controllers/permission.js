@@ -1,4 +1,5 @@
 import { validatePermission, validatePartialPermission } from "../schemas/permission.js";
+import { hotValidatePermission, hotValidatePartialPermission } from "../schemas/hotPermission.js";
 import { PermissionModel } from "../models/permission.js";
 import { getFormattedError } from "../utils/erros.js";
 import { UserModel } from "../models/user.js";
@@ -83,7 +84,7 @@ export class PermissionController {
       return res.status(403).json({ success: false, message: "No tiene permisos" });
     }
 
-    const result = validatePermission(req.body);
+    const result = hotValidatePermission(req.body);
     if (!result.success) {
       const formattedError = getFormattedError(result.error); 
       return res.status(400).json({ success: false, errors: formattedError });
@@ -146,7 +147,7 @@ export class PermissionController {
       return res.status(404).json({ success: false, message: "El permiso no existe" });
     }
 
-    const result = validatePartialPermission(req.body);
+    const result = hotValidatePartialPermission(req.body);
     if (!result.success) {
       const formattedError = getFormattedError(result.error);
       return res.status(400).json({ success: false, errors: formattedError });

@@ -144,6 +144,12 @@ export class UserModel {
       return true;
     }
 
+    // Si el permiso no termina en _view, con que este logueado es suficiente
+    const viewSuffix = "_view";
+    if (!resource.endsWith(viewSuffix) ) {
+      return true;
+    }
+
     // Verificar permisos
     for (const role of user.roles) {
       for (const permission of role.permissions) {
@@ -180,6 +186,13 @@ export class UserModel {
       return true;
     }
     // Verificar permisos
+
+    // Si el permiso no termina en _view, con que este logueado es suficiente
+    const viewSuffix = "_view";
+    if (!resource.endsWith(viewSuffix) ) {
+      return true;
+    }
+
     for (const role of user.roles) {
       for (const permission of role.permissions) {
         if (method == "View") {

@@ -31,7 +31,8 @@ export class EnumController {
       
       const resources = permissionResources.filter(r => !r.endsWith('_view'));
       const views = permissionResources.filter(r => r.endsWith('_view'));
-      res.json({ "Resources": resources, "Views": views });
+      const definitiveViews = ['Security_view', 'Kitchen_view', 'Atc_view', 'KpiDashboard_view', 'DeliveryPickup_view'];
+      res.json({ "Resources": resources, "Views": views, "DefinitiveViews": definitiveViews });
 
     } catch (error) {
       console.error(error);
@@ -43,7 +44,8 @@ export class EnumController {
     try {
       const methods = permissionMethods.filter(m => m !== 'View');
       const views = permissionMethods.filter(m => m === 'View');
-      res.json({ "Methods": methods, "View": views });
+      const definitiveMethod = ['View'];
+      res.json({ "Methods": methods, "View": views, "DefinitiveMethod": definitiveMethod });
       
     } catch (error) {
       console.error(error);

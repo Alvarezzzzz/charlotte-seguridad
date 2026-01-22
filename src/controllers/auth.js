@@ -267,50 +267,7 @@ export class AuthController {
         return;
       }
 
-      let hasPermission = false;
-
-      if (req.user.isAdmin) {
-        hasPermission = true;
-      } else {
-        // Obtener roles del usuario desde la BD
-        const user = await prisma.user.findUnique({
-          where: { id: req.user.id },
-          include: {
-            roles: {
-              include: {
-                permissions: true,
-              },
-            },
-          },
-        });
-
-        if (user) {
-          for (const role of user.roles) {
-            for (const permission of role.permissions) {
-              const isValidType = permission.type === "Resource";
-              const isValidResource =
-                permission.resource === "User_seguridad" ||
-                String(permission.resource) === "User_seguridad";
-              const isValidMethod =
-                permission.method === "Update" || permission.method === "All";
-
-              if (isValidType && isValidResource && isValidMethod) {
-                hasPermission = true;
-                break;
-              }
-            }
-            if (hasPermission) break;
-          }
-        }
-      }
-
-      if (!hasPermission) {
-        res.status(403).json({
-          success: false,
-          message: "No tiene permisos para realizar esta acción",
-        });
-        return;
-      }
+      
 
       // Verificar que el usuario existe
       const targetUser = await UserModel.findById(user_id);

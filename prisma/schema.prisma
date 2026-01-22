@@ -82,6 +82,11 @@ enum Resource {
   // Vistas de ATC
   TableManagement_view
 
+  // Permisos definitivos faltantes
+  Security_view
+  Kitchen_view
+  Atc_view
+
 }
 
 enum Method {

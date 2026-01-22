@@ -11,7 +11,7 @@ export const createUserRouter = () => {
 
   router.patch("/", authenticateToken, userController.updateUserByToken);
 
-  router.get("/:id", userController.getUserById);
+  router.get("/:id", authenticateToken , userController.getUserById);
 
   router.patch("/:id", authenticateToken, userController.updateUser);
   router.delete("/:id", authenticateToken, userController.deleteUser);
