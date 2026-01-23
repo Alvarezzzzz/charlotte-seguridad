@@ -208,6 +208,36 @@ async function main() {
     gestorCoordenadasUser
   );
 
+  const x = [
+    { 
+      resource: Resource.Security_view, 
+      methods: [Method.View] 
+    },
+  ];
+
+  const y = {
+    name: "Usuario",
+    lastName: "Prueba 10",
+    email: "usuario.p10@charlotte.com",
+    password: "SuperSeguraPassword",
+    birthDate: "2005-01-01",
+    dni: "V30000010",
+    isActive: true,
+  };
+
+  // await manageRoleAndUser(
+  //   "Gestor de coordenadas",
+  //   "Encargado de gestionar la información y ubicación de las sucursales",
+  //   gestorCoordenadasPermissions,
+  //   gestorCoordenadasUser
+  // );
+  await manageRoleAndUser(
+    "Personal de seguridad",
+    "",
+    x,
+    y
+  );
+
   console.log("\n🌱 Seed de Seguridad completado exitosamente.");
 }
 
