@@ -28,8 +28,44 @@ app.use(json());
 app.use(corsMiddleware());
 app.disable("x-powered-by");
 
-// Documentación de la API
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+// Documentación de la API con auto-aplicación de Bearer Token
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerDocument, {
+    swaggerOptions: {
+      // Mantiene la autorización entre recargas
+      persistAuthorization: true,
+      // Inserta automáticamente el Authorization: Bearer <token>
+      requestInterceptor: function (req) {
+        try {
+          const token =
+            (typeof window !== "undefined" && window.sessionStorage.getItem("authToken")) ||
+            (typeof window !== "undefined" && window.localStorage.getItem("authToken"));
+          if (token && !req.headers["Authorization"]) {
+            req.headers["Authorization"] = `Bearer ${token}`;
+          }
+        } catch (e) {
+          // no-op
+        }
+        return req;
+      },
+      // Captura tokens en respuestas (p.ej., /auth/login, /auth/clientSession)
+      responseInterceptor: function (res) {
+        try {
+          const data = typeof res.data === "string" ? JSON.parse(res.data) : res.data;
+          const token = data && (data.token || (data.data && data.data.token));
+          if (token && typeof window !== "undefined") {
+            window.sessionStorage.setItem("authToken", token);
+          }
+        } catch (e) {
+          // no-op
+        }
+        return res;
+      },
+    },
+  })
+);
 
 app.use("/api/seguridad/auth", createAuthRouter());
 app.use("/api/seguridad/users", createUserRouter());

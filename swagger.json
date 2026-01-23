@@ -421,6 +421,11 @@
             }
         }
     },
+    "security": [
+        {
+            "BearerAuth": []
+        }
+    ],
     "paths": {
         "/auth/login": {
             "post": {
@@ -428,6 +433,7 @@
                     "Auth"
                 ],
                 "summary": "Iniciar sesión",
+                "security": [],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -504,6 +510,7 @@
                     "Auth"
                 ],
                 "summary": "Verificar si el usuario está dentro del radio del restaurante",
+                "security": [],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -619,6 +626,7 @@
                     "Auth"
                 ],
                 "summary": "Generar sesión para un cliente invitado (GUEST)",
+                "security": [],
                 "requestBody": {
                     "required": true,
                     "content": {
