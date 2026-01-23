@@ -108,6 +108,7 @@ model Restaurant {
   latitude  Decimal @db.Decimal(10, 8)
   longitud  Decimal @db.Decimal(10, 8)
   radius    Decimal @db.Decimal(10, 2)
+  required Boolean @default(true)
 }
 
 model User {
