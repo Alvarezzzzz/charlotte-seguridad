@@ -110,136 +110,62 @@ async function manageRoleAndUser(roleName, roleDescription, permissionsConfig, u
 // --- EJECUCIÓN PRINCIPAL ---
 
 async function main() {
-  console.log("🌱 Iniciando Seed de Delivery & Pickup...");
+  console.log("🌱 Iniciando Seed del Módulo de Seguridad...");
 
   // ---------------------------------------------------------
-  // CASO 1: GERENTE DP
+  // CASO 1: ADMINISTRADOR DE USUARIOS SEGURIDAD
   // ---------------------------------------------------------
-  // const gerenteDpPermissions = [
+  // Usamos Method.All directamente según tu indicación
+  // const adminSeguridadPermissions = [
   //   { 
-  //     resource: Resource.Thresholds_dp, 
-  //     methods: [Method.Create, Method.Read, Method.Update, Method.Delete] 
+  //     resource: Resource.User_seguridad, 
+  //     methods: [Method.All] 
   //   },
   //   { 
-  //     resource: Resource.Notes_dp, 
-  //     methods: [Method.Update, Method.Create] 
+  //     resource: Resource.Role_seguridad, 
+  //     methods: [Method.All] 
   //   },
   //   { 
-  //     resource: Resource.NotesItems_dp,
-  //     methods: [Method.Update, Method.Delete]
+  //     resource: Resource.Permission_seguridad, 
+  //     methods: [Method.All] 
   //   },
-  //   { 
-  //     resource: Resource.Logs_dp, 
-  //     methods: [Method.Read] 
-  //   },
-  //   { 
-  //     resource: Resource.Zones_dp, 
-  //     methods: [Method.Create, Method.Update, Method.Delete] 
-  //   },
-  //   { 
-  //     resource: Resource.Managers_dp, 
-  //     methods: [Method.Create, Method.Read, Method.Update, Method.Delete] 
-  //   },
-  //   // Permisos de vistas
   //   {
-  //     resource: Resource.DeliveryPickup_view,
+  //     resource: Resource.UserManagement_view,
   //     methods: [Method.View]
   //   }
   // ];
-  const gerenteDpPermissions = [
-    {
-      resource: Resource.DeliveryPickup_view,
-      methods: [Method.View]
-    }
-  ];
-
-  const gerenteDpUser = {
-    name: "Usuario",
-    lastName: "Prueba 2",
-    email: "usuario.p2@charlotte.com",
-    password: "SuperSeguraPassword",
-    birthDate: "2005-01-01",
-    dni: "V30000002",
-    isActive: true,
-  };
-
-  // await manageRoleAndUser(
-  //   "Gerente dp",
-  //   "Gerente encargado de la configuración global de delivery y pickup",
-  //   gerenteDpPermissions,
-  //   gerenteDpUser
-  // );
-  await manageRoleAndUser(
-    "Personal de delivery & pickup",
-    "",
-    gerenteDpPermissions,
-    gerenteDpUser
-  );
-
-  // ---------------------------------------------------------
-  // CASO 2: SUPERVISOR DP
-  // ---------------------------------------------------------
-  // const supervisorDpPermissions = [
-  //   { 
-  //     resource: Resource.Thresholds_dp, 
-  //     methods: [Method.Read, Method.Update] 
-  //   },
-  //   { 
-  //     resource: Resource.Notes_dp, 
-  //     methods: [Method.Update, Method.Create] 
-  //   },
-  //   { 
-  //     resource: Resource.NotesItems_dp, 
-  //     methods: [Method.Update, Method.Delete] 
-  //   },
-  //   { 
-  //     resource: Resource.Logs_dp, 
-  //     methods: [Method.Read] 
-  //   },
-  //   { 
-  //     resource: Resource.Zones_dp, 
-  //     methods: [Method.Update] 
-  //   },
-  //   { 
-  //     resource: Resource.Managers_dp, 
-  //     methods: [Method.Read, Method.Update] 
-  //   },
-  //   {
-  //     resource: Resource.DeliveryPickup_view,
-  //     methods: [Method.View]
-  //   }
-  // ];
-   const supervisorDpPermissions = [
+  const adminSeguridadPermissions = [
     { 
-      resource: Resource.Kitchen_view, 
+      resource: Resource.KpiDashboard_view, 
       methods: [Method.View] 
     },
   ];
 
-  const supervisorDpUser = {
+  const adminSeguridadUser = {
     name: "Usuario",
-    lastName: "Prueba 3",
-    email: "usuario.p3@charlotte.com",
+    lastName: "Prueba 11",
+    email: "usuario.p11@charlotte.com",
     password: "SuperSeguraPassword",
     birthDate: "2005-01-01",
-    dni: "V30000003",
+    dni: "V30000011",
     isActive: true,
   };
 
   // await manageRoleAndUser(
-  //   "Supervisor dp",
-  //   "Supervisor operativo de delivery y pickup con permisos limitados",
-  //   supervisorDpPermissions,
-  //   supervisorDpUser
+  //   "Administrador de usuarios Seguridad",
+  //   "Administrador con acceso total a la gestión de usuarios, roles y permisos",
+  //   adminSeguridadPermissions,
+  //   adminSeguridadUser
   // );
   await manageRoleAndUser(
-    "Personal de delivery & pickup",
+    "Personal de kpi",
     "",
-    supervisorDpPermissions,
-    supervisorDpUser
+    adminSeguridadPermissions,
+    adminSeguridadUser
   );
 
-  console.log("\n🌱 Seed de Delivery & Pickup completado exitosamente.");
+
+  console.log("\n🌱 Seed de Seguridad completado exitosamente.");
 }
 
 main()

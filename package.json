@@ -12,7 +12,8 @@
     "seed:atc": "node prisma/atcSeed.js",
     "seed:dp": "node prisma/dpSeed.js",
     "seed:admin": "node prisma/adminSeed.js",
-    "seed:seguridad": "node prisma/seguridadSeed.js"
+    "seed:seguridad": "node prisma/seguridadSeed.js",
+    "seed:kpi": "node prisma/kpiSeed.js"
   },
   "author": "@jess-render",
   "license": "ISC",

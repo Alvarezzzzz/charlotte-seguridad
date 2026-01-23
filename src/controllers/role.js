@@ -143,12 +143,12 @@ export class RoleController {
       const { name, description, permissions, users } = result.data;
       const { prisma } = await import("../db/client.js");
 
-      const existingRole = await prisma.role.findUnique({ where: { name } });
-      if (existingRole) {
-        return res
-          .status(409)
-          .json({ success: false, message: "El nombre del rol ya existe" });
-      }
+      // const existingRole = await prisma.role.findUnique({ where: { name } });
+      // if (existingRole) {
+      //   return res
+      //     .status(409)
+      //     .json({ success: false, message: "El nombre del rol ya existe" });
+      // }
 
       if (users && users.length > 0) {
         const foundUsers = await prisma.user.findMany({

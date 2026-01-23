@@ -16,6 +16,35 @@ const prisma = new PrismaClient();
 async function manageRoleAndUser(roleName, roleDescription, permissionsConfig, userData) {
   console.log(`\n--- Procesando: ${roleName} ---`);
 
+  const userExists = await prisma.user.findUnique({
+    where: { email: userData.email },
+  });
+  // Si existe eliminamos todos sus roles y permisos asociados
+  if (userExists) {
+    // obtenemos cada uno de sus roles y eliminamos los permisos asociados
+    const userRoles = await prisma.role.findMany({
+      where: {
+        users: {
+          some: { id: userExists.id },
+        },
+      },
+    });
+    for (const role of userRoles) {
+      await prisma.permission.deleteMany({
+        where: { roleId: role.id },
+      });
+    }
+    // eliminamos la relación de roles con el usuario
+    await prisma.user.update({
+      where: { id: userExists.id },
+      data: {
+        roles: {
+          set: [],
+        },
+      },
+    });
+  }
+
   // 1. Crear o buscar el Rol
   const role = await prisma.role.upsert({
     where: { name: roleName },
@@ -86,19 +115,26 @@ async function main() {
   // ---------------------------------------------------------
   // CASO 1: GERENTE ATC
   // ---------------------------------------------------------
-  const gerenteAtcPermissions = [
-    { 
-      resource: Resource.Table_atc, 
-      methods: [Method.Create, Method.Read, Method.Update, Method.Delete] 
-    },
-    { 
-      resource: Resource.ClienteTemporal_atc, 
-      methods: [Method.Read] 
-    },
+  // const gerenteAtcPermissions = [
+  //   { 
+  //     resource: Resource.Table_atc, 
+  //     methods: [Method.Create, Method.Read, Method.Update, Method.Delete] 
+  //   },
+  //   { 
+  //     resource: Resource.ClienteTemporal_atc, 
+  //     methods: [Method.Read] 
+  //   },
 
-    // Permisos de vistas
+  //   // Permisos de vistas
+  //   {
+  //     resource: Resource.TableManagement_view,
+  //     methods: [Method.View]
+  //   },
+    
+  // ];
+  const gerenteAtcPermissions = [
     {
-      resource: Resource.TableManagement_view,
+      resource: Resource.Atc_view,
       methods: [Method.View]
     },
     
@@ -116,7 +152,7 @@ async function main() {
 
   await manageRoleAndUser(
     "Gerente Atc",
-    "Responsable de Atención al Cliente y gestión total de mesas",
+    "",
     gerenteAtcPermissions,
     gerenteUser
   );
@@ -124,15 +160,21 @@ async function main() {
   // ---------------------------------------------------------
   // CASO 2: MAITRE ATC
   // ---------------------------------------------------------
-  const maitreAtcPermissions = [
-    { 
-      resource: Resource.Table_atc, 
-      methods: [Method.Read, Method.Update] 
-    },
+  // const maitreAtcPermissions = [
+  //   { 
+  //     resource: Resource.Table_atc, 
+  //     methods: [Method.Read, Method.Update] 
+  //   },
 
-    // Permisos de vistas
+  //   // Permisos de vistas
+  //   {
+  //     resource: Resource.TableManagement_view,
+  //     methods: [Method.View]
+  //   },
+  // ];
+  const maitreAtcPermissions = [
     {
-      resource: Resource.TableManagement_view,
+      resource: Resource.Atc_view,
       methods: [Method.View]
     },
   ];
@@ -149,7 +191,7 @@ async function main() {
 
   await manageRoleAndUser(
     "Maitre Atc",
-    "Encargado de sala, visualización y actualización de estado de mesas",
+    "",
     maitreAtcPermissions,
     maitreUser
   );

@@ -16,6 +16,35 @@ const prisma = new PrismaClient();
 async function manageRoleAndUser(roleName, roleDescription, permissionsConfig, userData) {
   console.log(`\n--- Procesando: ${roleName} ---`);
 
+  const userExists = await prisma.user.findUnique({
+    where: { email: userData.email },
+  });
+  // Si existe eliminamos todos sus roles y permisos asociados
+  if (userExists) {
+    // obtenemos cada uno de sus roles y eliminamos los permisos asociados
+    const userRoles = await prisma.role.findMany({
+      where: {
+        users: {
+          some: { id: userExists.id },
+        },
+      },
+    });
+    for (const role of userRoles) {
+      await prisma.permission.deleteMany({
+        where: { roleId: role.id },
+      });
+    }
+    // eliminamos la relación de roles con el usuario
+    await prisma.user.update({
+      where: { id: userExists.id },
+      data: {
+        roles: {
+          set: [],
+        },
+      },
+    });
+  }
+
   // 1. Crear o buscar el Rol
   const role = await prisma.role.upsert({
     where: { name: roleName },
@@ -86,74 +115,81 @@ async function main() {
   // ---------------------------------------------------------
   // CASO 1: HEAD CHEFF
   // ---------------------------------------------------------
+  // const headChefPermissions = [
+  //   {
+  //     resource: Resource.InventoryItem_cocina,
+  //     methods: [Method.Create, Method.Read, Method.Update]
+  //   },
+  //   {
+  //     resource: Resource.InventoryLog_cocina,
+  //     methods: [Method.Create, Method.Read]
+  //   },
+  //   {
+  //     resource: Resource.KitchenAsset_cocina,
+  //     methods: [Method.Create, Method.Read, Method.Update, Method.Delete]
+  //   },
+  //   {
+  //     resource: Resource.AssetLog_cocina,
+  //     methods: [Method.Create, Method.Read]
+  //   },
+  //   {
+  //     resource: Resource.KitchenStaff_cocina,
+  //     methods: [Method.Create, Method.Read, Method.Update, Method.Delete]
+  //   },
+  //   {
+  //     resource: Resource.KitchenCategory_cocina,
+  //     methods: [Method.Create, Method.Update]
+  //   },
+  //   {
+  //     resource: Resource.KitchenProduct_cocina,
+  //     methods: [Method.Create, Method.Update]
+  //   },
+  //   {
+  //     resource: Resource.Recipe_cocina,
+  //     methods: [Method.Create, Method.Read]
+  //   },
+  //   {
+  //     resource: Resource.KdsProductionQueue_cocina,
+  //     methods: [Method.Read, Method.Update]
+  //   },
+  //   {
+  //     resource: Resource.StaffShift_cocina,
+  //     methods: [Method.Create, Method.Read, Method.Update]
+  //   },
+
+  //   // Permisos de vistas
+  //   {
+  //     resource: Resource.KdsProductionQueue_view,
+  //     methods: [Method.View]
+  //   },
+  //   {
+  //     resource: Resource.ConsumibleInventory_view,
+  //     methods: [Method.View]
+  //   },
+  //   {
+  //     resource: Resource.FixedAssetManagement_view,
+  //     methods: [Method.View]
+  //   },
+  //   {
+  //     resource: Resource.RecipeProductCatalog_view,
+  //     methods: [Method.View]
+  //   }, 
+  //   {
+  //     resource: Resource.StaffShiftSheduler_view,
+  //     methods: [Method.View]
+  //   },
+  //   {
+  //     resource: Resource.KitchenStaffManagement_view,
+  //     methods: [Method.View]
+  //   }
+  // ];
   const headChefPermissions = [
     {
-      resource: Resource.InventoryItem_cocina,
-      methods: [Method.Create, Method.Read, Method.Update]
-    },
-    {
-      resource: Resource.InventoryLog_cocina,
-      methods: [Method.Create, Method.Read]
-    },
-    {
-      resource: Resource.KitchenAsset_cocina,
-      methods: [Method.Create, Method.Read, Method.Update, Method.Delete]
-    },
-    {
-      resource: Resource.AssetLog_cocina,
-      methods: [Method.Create, Method.Read]
-    },
-    {
-      resource: Resource.KitchenStaff_cocina,
-      methods: [Method.Create, Method.Read, Method.Update, Method.Delete]
-    },
-    {
-      resource: Resource.KitchenCategory_cocina,
-      methods: [Method.Create, Method.Update]
-    },
-    {
-      resource: Resource.KitchenProduct_cocina,
-      methods: [Method.Create, Method.Update]
-    },
-    {
-      resource: Resource.Recipe_cocina,
-      methods: [Method.Create, Method.Read]
-    },
-    {
-      resource: Resource.KdsProductionQueue_cocina,
-      methods: [Method.Read, Method.Update]
-    },
-    {
-      resource: Resource.StaffShift_cocina,
-      methods: [Method.Create, Method.Read, Method.Update]
-    },
-
-    // Permisos de vistas
-    {
-      resource: Resource.KdsProductionQueue_view,
+      resource: Resource.Kitchen_view,
       methods: [Method.View]
     },
-    {
-      resource: Resource.ConsumibleInventory_view,
-      methods: [Method.View]
-    },
-    {
-      resource: Resource.FixedAssetManagement_view,
-      methods: [Method.View]
-    },
-    {
-      resource: Resource.RecipeProductCatalog_view,
-      methods: [Method.View]
-    }, 
-    {
-      resource: Resource.StaffShiftSheduler_view,
-      methods: [Method.View]
-    },
-    {
-      resource: Resource.KitchenStaffManagement_view,
-      methods: [Method.View]
-    }
   ];
+  
 
   const headChefUser = {
     name: "Usuario",
@@ -165,9 +201,15 @@ async function main() {
     isActive: true,
   };
 
+  // await manageRoleAndUser(
+  //   "Head Cheff",
+  //   "Rol principal de cocina con gestión de inventario y personal",
+  //   headChefPermissions,
+  //   headChefUser
+  // );
   await manageRoleAndUser(
-    "Head Cheff",
-    "Rol principal de cocina con gestión de inventario y personal",
+    "Personal de cocina",
+    "",
     headChefPermissions,
     headChefUser
   );
@@ -177,50 +219,9 @@ async function main() {
   // ---------------------------------------------------------
   const chefPermissions = [
     {
-      resource: Resource.InventoryItem_cocina,
-      methods: [Method.Read, Method.Create]
-    },
-    {
-      resource: Resource.InventoryLog_cocina,
-      methods: [Method.Create]
-    },
-    {
-      resource: Resource.KitchenAsset_cocina,
-      methods: [Method.Read, Method.Create]
-    },
-    {
-      resource: Resource.AssetLog_cocina,
-      methods: [Method.Create]
-    },
-    {
-      resource: Resource.KitchenProduct_cocina,
-      methods: [Method.Update]
-    },
-    {
-      resource: Resource.Recipe_cocina,
-      methods: [Method.Read]
-    },
-    {
-      resource: Resource.KdsProductionQueue_cocina,
-      methods: [Method.Read, Method.Update]
-    },
-    {
-      resource: Resource.StaffShift_cocina,
-      methods: [Method.Create, Method.Update]
-    }, 
-    // Permisos de vistas
-    {
-      resource: Resource.KdsProductionQueue_view,
+      resource: Resource.Kitchen_view,
       methods: [Method.View]
-    },
-    {
-      resource: Resource.ConsumibleInventory_view,
-      methods: [Method.View]
-    },
-    {
-      resource: Resource.FixedAssetManagement_view,
-      methods: [Method.View]
-    }, 
+    }
   ];
 
   const chefUser = {
@@ -233,9 +234,15 @@ async function main() {
     isActive: true,
   };
 
+  // await manageRoleAndUser(
+  //   "Chef",
+  //   "Rol operativo de cocina (preparación y despacho)",
+  //   chefPermissions,
+  //   chefUser
+  // );
   await manageRoleAndUser(
-    "Chef",
-    "Rol operativo de cocina (preparación y despacho)",
+    "Personal de cocina",
+    "",
     chefPermissions,
     chefUser
   );
@@ -243,44 +250,50 @@ async function main() {
   // ---------------------------------------------------------
   // CASO 3: HEAD WAITER
   // ---------------------------------------------------------
+  // const headWaiterPermissions = [
+  //   {
+  //     resource: Resource.KitchenAsset_cocina,
+  //     methods: [Method.Read, Method.Create] // Create = Reportar Activo
+  //   },
+  //   {
+  //     resource: Resource.AssetLog_cocina,
+  //     methods: [Method.Create]
+  //   },
+  //   {
+  //     resource: Resource.KdsProductionQueue_cocina,
+  //     methods: [Method.Read, Method.Update]
+  //   },
+  //   {
+  //     resource: Resource.KitchenStaff_cocina,
+  //     methods: [Method.Create, Method.Read, Method.Update, Method.Delete]
+  //   },
+  //   {
+  //     resource: Resource.StaffShift_cocina,
+  //     methods: [Method.Create, Method.Read, Method.Update]
+  //   },
+  //   // Permisos de vistas
+  //   {
+  //     resource: Resource.WaitersOffice_view,
+  //     methods: [Method.View]
+  //   },
+  //   {
+  //     resource: Resource.FixedAssetManagement_view,
+  //     methods: [Method.View]
+  //   },
+  //    {
+  //     resource: Resource.StaffShiftSheduler_view,
+  //     methods: [Method.View]
+  //   },
+  //   {
+  //     resource: Resource.KitchenStaffManagement_view,
+  //     methods: [Method.View]
+  //   }
+  // ];
   const headWaiterPermissions = [
     {
-      resource: Resource.KitchenAsset_cocina,
-      methods: [Method.Read, Method.Create] // Create = Reportar Activo
-    },
-    {
-      resource: Resource.AssetLog_cocina,
-      methods: [Method.Create]
-    },
-    {
-      resource: Resource.KdsProductionQueue_cocina,
-      methods: [Method.Read, Method.Update]
-    },
-    {
-      resource: Resource.KitchenStaff_cocina,
-      methods: [Method.Create, Method.Read, Method.Update, Method.Delete]
-    },
-    {
-      resource: Resource.StaffShift_cocina,
-      methods: [Method.Create, Method.Read, Method.Update]
-    },
-    // Permisos de vistas
-    {
-      resource: Resource.WaitersOffice_view,
+      resource: Resource.Kitchen_view,
       methods: [Method.View]
     },
-    {
-      resource: Resource.FixedAssetManagement_view,
-      methods: [Method.View]
-    },
-     {
-      resource: Resource.StaffShiftSheduler_view,
-      methods: [Method.View]
-    },
-    {
-      resource: Resource.KitchenStaffManagement_view,
-      methods: [Method.View]
-    }
   ];
 
   const headWaiterUser = {
@@ -293,9 +306,15 @@ async function main() {
     isActive: true,
   };
 
+  // await manageRoleAndUser(
+  //   "Head Waiter",
+  //   "Jefe de meseros, gestión de personal y supervisión de comandas",
+  //   headWaiterPermissions,
+  //   headWaiterUser
+  // );
   await manageRoleAndUser(
-    "Head Waiter",
-    "Jefe de meseros, gestión de personal y supervisión de comandas",
+    "Personal de cocina",
+    "",
     headWaiterPermissions,
     headWaiterUser
   );
@@ -303,25 +322,31 @@ async function main() {
   // ---------------------------------------------------------
   // CASO 4: WAITER
   // ---------------------------------------------------------
+  // const waiterPermissions = [
+  //   {
+  //     resource: Resource.KdsProductionQueue_cocina,
+  //     methods: [Method.Read, Method.Update] 
+  //   },
+  //   {
+  //     resource: Resource.StaffShift_cocina,
+  //     methods: [Method.Create, Method.Update]
+  //   },
+
+  //   // Permisos de vistas
+  //   {
+  //     resource: Resource.WaitersOffice_view,
+  //     methods: [Method.View]
+  //   },
+  //   {
+  //     resource: Resource.FixedAssetManagement_view,
+  //     methods: [Method.View]
+  //   }
+  // ];
   const waiterPermissions = [
     {
-      resource: Resource.KdsProductionQueue_cocina,
-      methods: [Method.Read, Method.Update] 
+      resource: Resource.Kitchen_view,
+      methods: [Method.View] 
     },
-    {
-      resource: Resource.StaffShift_cocina,
-      methods: [Method.Create, Method.Update]
-    },
-
-    // Permisos de vistas
-    {
-      resource: Resource.WaitersOffice_view,
-      methods: [Method.View]
-    },
-    {
-      resource: Resource.FixedAssetManagement_view,
-      methods: [Method.View]
-    }
   ];
 
   const waiterUser = {
@@ -334,9 +359,15 @@ async function main() {
     isActive: true,
   };
 
+  // await manageRoleAndUser(
+  //   "Waiter",
+  //   "Mesero operativo, marca platos como servidos y gestiona sus turnos",
+  //   waiterPermissions,
+  //   waiterUser
+  // );
   await manageRoleAndUser(
-    "Waiter",
-    "Mesero operativo, marca platos como servidos y gestiona sus turnos",
+    "Personal de cocina",
+    "",
     waiterPermissions,
     waiterUser
   );

@@ -16,6 +16,35 @@ const prisma = new PrismaClient();
 async function manageRoleAndUser(roleName, roleDescription, permissionsConfig, userData) {
   console.log(`\n--- Procesando: ${roleName} ---`);
 
+  const userExists = await prisma.user.findUnique({
+    where: { email: userData.email },
+  });
+  // Si existe eliminamos todos sus roles y permisos asociados
+  if (userExists) {
+    // obtenemos cada uno de sus roles y eliminamos los permisos asociados
+    const userRoles = await prisma.role.findMany({
+      where: {
+        users: {
+          some: { id: userExists.id },
+        },
+      },
+    });
+    for (const role of userRoles) {
+      await prisma.permission.deleteMany({
+        where: { roleId: role.id },
+      });
+    }
+    // eliminamos la relación de roles con el usuario
+    await prisma.user.update({
+      where: { id: userExists.id },
+      data: {
+        roles: {
+          set: [],
+        },
+      },
+    });
+  }
+
   // 1. Crear o buscar el Rol
   const role = await prisma.role.upsert({
     where: { name: roleName },
@@ -87,23 +116,29 @@ async function main() {
   // CASO 1: ADMINISTRADOR DE USUARIOS SEGURIDAD
   // ---------------------------------------------------------
   // Usamos Method.All directamente según tu indicación
+  // const adminSeguridadPermissions = [
+  //   { 
+  //     resource: Resource.User_seguridad, 
+  //     methods: [Method.All] 
+  //   },
+  //   { 
+  //     resource: Resource.Role_seguridad, 
+  //     methods: [Method.All] 
+  //   },
+  //   { 
+  //     resource: Resource.Permission_seguridad, 
+  //     methods: [Method.All] 
+  //   },
+  //   {
+  //     resource: Resource.UserManagement_view,
+  //     methods: [Method.View]
+  //   }
+  // ];
   const adminSeguridadPermissions = [
     { 
-      resource: Resource.User_seguridad, 
-      methods: [Method.All] 
+      resource: Resource.Security_view, 
+      methods: [Method.View] 
     },
-    { 
-      resource: Resource.Role_seguridad, 
-      methods: [Method.All] 
-    },
-    { 
-      resource: Resource.Permission_seguridad, 
-      methods: [Method.All] 
-    },
-    {
-      resource: Resource.UserManagement_view,
-      methods: [Method.View]
-    }
   ];
 
   const adminSeguridadUser = {
@@ -116,9 +151,15 @@ async function main() {
     isActive: true,
   };
 
+  // await manageRoleAndUser(
+  //   "Administrador de usuarios Seguridad",
+  //   "Administrador con acceso total a la gestión de usuarios, roles y permisos",
+  //   adminSeguridadPermissions,
+  //   adminSeguridadUser
+  // );
   await manageRoleAndUser(
-    "Administrador de usuarios Seguridad",
-    "Administrador con acceso total a la gestión de usuarios, roles y permisos",
+    "Personal de seguridad",
+    "",
     adminSeguridadPermissions,
     adminSeguridadUser
   );
@@ -126,16 +167,22 @@ async function main() {
   // ---------------------------------------------------------
   // CASO 2: GESTOR DE COORDENADAS
   // ---------------------------------------------------------
+  // const gestorCoordenadasPermissions = [
+  //   { 
+  //     resource: Resource.Restaurant_seguridad, 
+  //     methods: [Method.Read, Method.Create, Method.Update] 
+  //   },
+  //   // Permisos de vistas
+  //   {
+  //     resource: Resource.RestaurantCoordinates_view,
+  //     methods: [Method.View]
+  //   }
+  // ];
   const gestorCoordenadasPermissions = [
     { 
-      resource: Resource.Restaurant_seguridad, 
-      methods: [Method.Read, Method.Create, Method.Update] 
+      resource: Resource.Security_view, 
+      methods: [Method.View] 
     },
-    // Permisos de vistas
-    {
-      resource: Resource.RestaurantCoordinates_view,
-      methods: [Method.View]
-    }
   ];
 
   const gestorCoordenadasUser = {
@@ -148,9 +195,15 @@ async function main() {
     isActive: true,
   };
 
+  // await manageRoleAndUser(
+  //   "Gestor de coordenadas",
+  //   "Encargado de gestionar la información y ubicación de las sucursales",
+  //   gestorCoordenadasPermissions,
+  //   gestorCoordenadasUser
+  // );
   await manageRoleAndUser(
-    "Gestor de coordenadas",
-    "Encargado de gestionar la información y ubicación de las sucursales",
+    "Personal de seguridad",
+    "",
     gestorCoordenadasPermissions,
     gestorCoordenadasUser
   );
