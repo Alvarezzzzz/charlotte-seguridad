@@ -10,10 +10,6 @@ export class RestaurantController {
 
   getRestaurantInfo = async (req, res) => {
     try {
-      const hasPermission = req.user.isAdmin ||
-        (await UserModel.checkUserPermission(req.user.id, "Restaurant_seguridad", "Read"));
-
-      if (!hasPermission) return res.status(403).json({ success: false, message: "No autorizado" });
 
       const restaurants = await this.restaurantModel.getAll();
       if (!restaurants || restaurants.length === 0) return res.status(404).json({ success: false, message: "No configurado" });
@@ -24,7 +20,8 @@ export class RestaurantController {
       return res.json({
         latitude: Number(r.latitude),
         longitud: Number(r.longitud),
-        radius: Number(r.radius)
+        radius: Number(r.radius),
+        required: r.required
       });
     } catch (error) {
       console.error("Error en GET Restaurant info:", error);

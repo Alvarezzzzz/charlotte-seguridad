@@ -7,13 +7,12 @@ export const createRestaurantRouter = () => {
   const router = Router();
   const restaurantController = new RestaurantController();
 
-  router.use(authenticateToken);
 
   router.get("/", restaurantController.getRestaurantInfo);
   router.get("/:id", restaurantController.getRestaurantById);
-  router.post("/", restaurantController.createRestaurant);
-  router.patch("/", restaurantController.updateRestaurantCoordinates);
-  router.delete("/:id", restaurantController.deleteRestaurant);
+  router.post("/", authenticateToken, restaurantController.createRestaurant);
+  router.patch("/", authenticateToken, restaurantController.updateRestaurantCoordinates);
+  router.delete("/:id", authenticateToken, restaurantController.deleteRestaurant);
 
   return router;
 };
