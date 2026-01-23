@@ -211,7 +211,7 @@ async function main() {
   // ];
    const supervisorDpPermissions = [
     { 
-      resource: Resource.Kitchen_view, 
+      resource: Resource.DeliveryPickup_view, 
       methods: [Method.View] 
     },
   ];
