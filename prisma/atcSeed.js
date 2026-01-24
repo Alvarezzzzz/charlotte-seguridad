@@ -151,7 +151,7 @@ async function main() {
   };
 
   await manageRoleAndUser(
-    "Gerente Atc",
+    "Personal de Atc",
     "",
     gerenteAtcPermissions,
     gerenteUser
@@ -190,7 +190,7 @@ async function main() {
   };
 
   await manageRoleAndUser(
-    "Maitre Atc",
+    "Personal de Atc",
     "",
     maitreAtcPermissions,
     maitreUser

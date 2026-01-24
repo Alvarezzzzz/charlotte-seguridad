@@ -353,56 +353,14 @@
             "PermissionType": {
                 "type": "string",
                 "enum": [
-                    "View",
-                    "Resource"
+                    "View"
                 ]
             },
             "Resource": {
                 "type": "string",
                 "enum": [
-                    "Restaurant_seguridad",
-                    "User_seguridad",
-                    "Role_seguridad",
-                    "Permission_seguridad",
-                    "KitchenCategory_cocina",
-                    "KitchenProduct_cocina",
-                    "Recipe_cocina",
-                    "InventoryItem_cocina",
-                    "InventoryLog_cocina",
-                    "KitchenAsset_cocina",
-                    "AssetLog_cocina",
-                    "KitchenStaff_cocina",
-                    "StaffShift_cocina",
-                    "KdsProductionQueue_cocina",
-                    "KpiMetas_kpi",
-                    "KpiReglaSemaforo_kpi",
-                    "KpiSnapshotDiario_kpi",
-                    "KpiAlertaHistorial_kpi",
-                    "KpiAuditoriaExport_kpi",
-                    "Table_atc",
-                    "ClienteTemporal_atc",
-                    "Comanda_atc",
-                    "OrderItem_atc",
-                    "ServiceRequest_atc",
-                    "Zones_dp",
-                    "Thresholds_dp",
-                    "Managers_dp",
-                    "Notes_dp",
-                    "NotesItems_dp",
-                    "Logs_dp",
-                    "KdsProductionQueue_view",
-                    "ConsumibleInventory_view",
-                    "RecipeProductCatalog_view",
-                    "FixedAssetManagement_view",
-                    "AuditTransactionLog_view",
-                    "WaitersOffice_view",
-                    "StaffShiftSheduler_view",
-                    "KitchenStaffManagement_view",
                     "DeliveryPickup_view",
                     "KpiDashboard_view",
-                    "UserManagement_view",
-                    "RestaurantCoordinates_view",
-                    "TableManagement_view",
                     "Security_view",
                     "Kitchen_view",
                     "Atc_view"
@@ -411,11 +369,6 @@
             "Method": {
                 "type": "string",
                 "enum": [
-                    "Create",
-                    "Read",
-                    "Update",
-                    "Delete",
-                    "All",
                     "View"
                 ]
             }
@@ -473,7 +426,7 @@
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Obtener roles y permisos detallados para el usuario actual",
+                "summary": "Obteniene los roles de pasados por le body de un usuario logueado",
                 "security": [
                     {
                         "BearerAuth": []
@@ -545,7 +498,7 @@
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Cambiar contraseña de un usuario (Admin)",
+                "summary": "Cambiar contraseña de un usuario (Para los admins)",
                 "security": [
                     {
                         "BearerAuth": []
@@ -585,7 +538,7 @@
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Cambiar contraseña propia",
+                "summary": "Cambiar contraseña (un usuario logueado se cambia su contrasenia)",
                 "security": [
                     {
                         "BearerAuth": []
@@ -1290,141 +1243,7 @@
                 }
             }
         },
-        "/products": {
-            "get": {
-                "tags": [
-                    "Products"
-                ],
-                "summary": "Listar productos",
-                "parameters": [
-                    {
-                        "name": "category",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Lista de productos",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Product"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "tags": [
-                    "Products"
-                ],
-                "summary": "Crear producto",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Product"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Producto creado"
-                    }
-                }
-            }
-        },
-        "/products/{id}": {
-            "get": {
-                "tags": [
-                    "Products"
-                ],
-                "summary": "Obtener producto por ID",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Información del producto",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Product"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "patch": {
-                "tags": [
-                    "Products"
-                ],
-                "summary": "Actualizar producto",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Producto actualizado"
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "Products"
-                ],
-                "summary": "Eliminar producto",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Producto eliminado"
-                    }
-                }
-            }
-        },
+        
         "/restaurants": {
             "get": {
                 "tags": [
@@ -1501,186 +1320,8 @@
                     }
                 }
             }
-        },
-        "/restaurants/{id}": {
-            "get": {
-                "tags": [
-                    "Restaurants"
-                ],
-                "summary": "Obtener restaurante por ID",
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Información del restaurante"
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "Restaurants"
-                ],
-                "summary": "Eliminar restaurante",
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Restaurante eliminado"
-                    }
-                }
-            }
-        },
-        "/enums/User/dataType": {
-            "get": {
-                "tags": [
-                    "Enums"
-                ],
-                "summary": "Obtener tipos de datos de usuario",
-                "responses": {
-                    "200": {
-                        "description": "Lista de valores",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "type": "string"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/enums/Permission/type": {
-            "get": {
-                "tags": [
-                    "Enums"
-                ],
-                "summary": "Obtener tipos de permiso",
-                "responses": {
-                    "200": {
-                        "description": "Lista de valores",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "type": "string"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/enums/Permission/resource": {
-            "get": {
-                "tags": [
-                    "Enums"
-                ],
-                "summary": "Obtener recursos de permiso",
-                "responses": {
-                    "200": {
-                        "description": "Lista de valores categorizada",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "Resources": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            }
-                                        },
-                                        "Views": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            }
-                                        },
-                                        "DefinitiveViews": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/enums/Permission/method": {
-            "get": {
-                "tags": [
-                    "Enums"
-                ],
-                "summary": "Obtener métodos de permiso",
-                "responses": {
-                    "200": {
-                        "description": "Lista de valores categorizada",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "Methods": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            }
-                                        },
-                                        "View": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            }
-                                        },
-                                        "DefinitiveMethod": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
         }
+        
+        
     }
 }
