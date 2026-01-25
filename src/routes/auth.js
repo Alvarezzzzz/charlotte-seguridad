@@ -50,6 +50,12 @@ export const createAuthRouter = () => {
   );
 
   router.post(
+    "/hasPermissionView",
+    authenticateToken,
+    authController.hasPermissionView.bind(authController)
+  );
+
+  router.post(
     "/verifyLocationToken",
     authController.verifyLocationToken.bind(authController)
   );

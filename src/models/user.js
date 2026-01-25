@@ -214,4 +214,55 @@ export class UserModel {
       }
     }
   }
+
+  static async checkUserAnyPermissionView(userId, resources, method) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        roles: {
+          include: {
+            permissions: true,
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      return false;
+    }
+    // Si es admin, tiene todos los permisos
+    if (user.isAdmin) {
+      return true;
+    }
+    // Verificar permisos
+
+    // Si el permiso no termina en _view, con que este logueado es suficiente
+    // const viewSuffix = "_view";
+    // if (!resource.endsWith(viewSuffix) ) {
+    //   return true;
+    // }
+
+    for (const role of user.roles) {
+      for (const permission of role.permissions) {
+        if (method == "View") {
+          for (const resource of resources) {
+            if (
+              permission.type === "View" &&
+              permission.resource === resource &&
+              permission.method === method
+            ) {
+              return true;
+            }
+          }
+        }
+        if (permission.type === "Resource" && permission.method === method) {
+          for (const resource of resources) {
+            if (permission.resource === resource) {
+              return true;
+            }
+          }
+        }
+      }
+    }
+  }
 }
