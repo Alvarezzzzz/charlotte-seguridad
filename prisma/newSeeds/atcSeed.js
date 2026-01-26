@@ -135,7 +135,7 @@ async function main() {
   // Jefe de Sala
   const JefeSalaAtcPermissions = [
     {
-      resource: Resource.AtcJefeSala_view,
+      resource: Resource.AtcSupervisorSala_view,
       methods: [Method.View]
     },
     
@@ -152,7 +152,7 @@ async function main() {
   };
 
   await manageRoleAndUser(
-    "Jefe de Sala",
+    "Supervisor de Sala",
     "",
     JefeSalaAtcPermissions,
     gerenteUser

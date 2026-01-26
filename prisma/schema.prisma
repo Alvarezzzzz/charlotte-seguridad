@@ -87,10 +87,11 @@ enum Resource {
   Kitchen_view
   Atc_view
 
+  AtcJefeSala_view
   // Nuevos permisos post presentacion
 
   // Atc
-  AtcJefeSala_view
+  AtcSupervisorSala_view
   AtcMaitre_view
 
   // Delivery y Pickup
