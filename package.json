@@ -13,7 +13,13 @@
     "seed:dp": "node prisma/dpSeed.js",
     "seed:admin": "node prisma/adminSeed.js",
     "seed:seguridad": "node prisma/seguridadSeed.js",
-    "seed:kpi": "node prisma/kpiSeed.js"
+    "seed:kpi": "node prisma/kpiSeed.js",
+    "newSeed:cocina": "node prisma/newSeeds/cocinaSeed.js",
+    "newSeed:atc": "node prisma/newSeeds/atcSeed.js",
+    "newSeed:dp": "node prisma/newSeeds/dpSeed.js",
+    "newSeed:admin": "node prisma/newSeeds/adminSeed.js",
+    "newSeed:seguridad": "node prisma/newSeeds/seguridadSeed.js",
+    "newSeed:kpi": "node prisma/newSeeds/kpiSeed.js"
   },
   "author": "@jess-render",
   "license": "ISC",

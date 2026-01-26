@@ -87,6 +87,27 @@ enum Resource {
   Kitchen_view
   Atc_view
 
+  // Nuevos permisos post presentacion
+
+  // Atc
+  AtcJefeSala_view
+  AtcMaitre_view
+
+  // Delivery y Pickup
+  DpSupervisor_view
+  DpDespachador_view
+
+  // cocina
+  CocinaSupervisor_view
+  CocinaChef_view
+  CocinaCocinero_view
+  CocinaCamarero_view
+
+  // seguridad
+  SeguridadPersonal_view
+
+  // kpi
+  KpiSupervisor_view
 }
 
 enum Method {
