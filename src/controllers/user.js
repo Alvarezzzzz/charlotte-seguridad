@@ -575,6 +575,7 @@ export class UserController {
 
       // Generar nuevo token con los datos actualizados
       const { generateToken } = await import("../utils/jwt.js");
+      const permissions = await UserModel.getUserResourcesByEmail(updatedUser.email);
       const newToken = generateToken({
         id: updatedUser.id,
         name: updatedUser.name,
@@ -588,6 +589,7 @@ export class UserController {
         isAdmin: updatedUser.isAdmin,
         isActive: updatedUser.isActive,
         roles: updatedUser.roles.map((role) => role.id),
+        permissions: permissions
       });
 
       res.json({

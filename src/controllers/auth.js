@@ -50,6 +50,8 @@ export class AuthController {
       // Obtener IDs de roles
       const roleIds = user.roles.map((role) => role.id);
 
+      const userResources = await UserModel.getUserResourcesByEmail(email);
+
       // Crear payload del token
       const tokenPayload = {
         id: user.id,
@@ -64,6 +66,7 @@ export class AuthController {
         isAdmin: user.isAdmin,
         isActive: user.isActive,
         roles: roleIds,
+        permissions: userResources,
       };
 
       const token = generateToken(tokenPayload);

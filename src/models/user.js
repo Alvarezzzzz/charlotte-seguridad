@@ -265,4 +265,41 @@ export class UserModel {
       }
     }
   }
+
+  static async getUserResourcesByEmail(email) {
+    // 1. Buscamos el usuario e incluimos roles -> permisos
+    const user = await prisma.user.findUnique({
+      where: { email },
+      include: {
+        roles: {
+          include: {
+            permissions: {
+              select: {
+                resource: true, // Solo nos interesa el campo 'resource'
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // 2. Si no existe el usuario, retornamos un array vacío o lanzamos error
+    if (!user) {
+      return []; 
+    }
+
+    // 3. Nota sobre isAdmin: 
+    // Si el usuario es isAdmin, técnicamente tiene acceso a TODOS los recursos.
+    // Si deseas que esta función retorne ["ALL"] o todos los recursos del enum
+    // cuando es admin, puedes agregar esa lógica aquí. 
+    // Por ahora, me ciño a tu petición: "recursos de los permisos que tengan los roles".
+
+    // 4. Extraemos y aplanamos los recursos
+    const allResources = user.roles.flatMap((role) =>
+      role.permissions.map((p) => p.resource)
+    );
+
+    // 5. Filtramos duplicados usando Set y retornamos el array
+    return [...new Set(allResources)];
+  }
 }
