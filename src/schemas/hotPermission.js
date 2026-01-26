@@ -5,7 +5,7 @@ const permissionSchema = z.object({
   
   type: z.literal("View"), 
   
-  resource: z.enum(['AtcJefeSala_view', 'AtcMaitre_view', 'DpSupervisor_view', 'DpDespachador_view', 'CocinaSupervisor_view', 'CocinaChef_view', 'CocinaCocinero_view', 'CocinaCamarero_view', 'SeguridadPersonal_view', 'KpiSupervisor_view']), 
+  resource: z.enum(['AtcSupervisorSala_view', 'AtcMaitre_view', 'DpSupervisor_view', 'DpDespachador_view', 'CocinaSupervisor_view', 'CocinaChef_view', 'CocinaCocinero_view', 'CocinaCamarero_view', 'SeguridadPersonal_view', 'KpiSupervisor_view']), 
   
   method: z.literal("View"),
   

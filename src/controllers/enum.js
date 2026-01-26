@@ -31,7 +31,7 @@ export class EnumController {
       
       const resources = permissionResources.filter(r => !r.endsWith('_view'));
       const views = permissionResources.filter(r => r.endsWith('_view'));
-      const definitiveViews = ['AtcJefeSala_view', 'AtcMaitre_view', 'DpSupervisor_view', 'DpDespachador_view', 'CocinaSupervisor_view', 'CocinaChef_view', 'CocinaCocinero_view', 'CocinaCamarero_view', 'SeguridadPersonal_view', 'KpiSupervisor_view'];
+      const definitiveViews = ['AtcSupervisorSala_view', 'AtcMaitre_view', 'DpSupervisor_view', 'DpDespachador_view', 'CocinaSupervisor_view', 'CocinaChef_view', 'CocinaCocinero_view', 'CocinaCamarero_view', 'SeguridadPersonal_view', 'KpiSupervisor_view'];
       res.json({ "Resources": resources, "Views": views, "DefinitiveViews": definitiveViews });
 
     } catch (error) {
