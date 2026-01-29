@@ -134,10 +134,10 @@ async function main() {
   //     methods: [Method.View]
   //   }
   // ];
-//   Supervisor de kpi
+//   Gerente de kpi
   const adminSeguridadPermissions = [
     { 
-      resource: Resource.KpiSupervisor_view, 
+      resource: Resource.KpiGerente_view, 
       methods: [Method.View] 
     },
   ];
@@ -159,7 +159,7 @@ async function main() {
   //   adminSeguridadUser
   // );
   await manageRoleAndUser(
-    "Supervisor de kpi",
+    "Gerente",
     "",
     adminSeguridadPermissions,
     adminSeguridadUser

@@ -99,7 +99,7 @@ enum Resource {
   DpDespachador_view
 
   // cocina
-  CocinaSupervisor_view
+  CocinaSupervisor_view // esta no se usara 
   CocinaChef_view
   CocinaCocinero_view
   CocinaCamarero_view
@@ -108,7 +108,8 @@ enum Resource {
   SeguridadPersonal_view
 
   // kpi
-  KpiSupervisor_view
+  KpiSupervisor_view // esta no se usara
+  KpiGerente_view
 }
 
 enum Method {
