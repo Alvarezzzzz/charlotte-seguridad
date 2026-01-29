@@ -185,36 +185,36 @@ async function main() {
   // ];
   // Supervisor de cocina 
 
-  const headChefPermissions = [
-    {
-      resource: Resource.CocinaSupervisor_view,
-      methods: [Method.View]
-    },
-  ];
+  // const headChefPermissions = [
+  //   {
+  //     resource: Resource.CocinaSupervisor_view,
+  //     methods: [Method.View]
+  //   },
+  // ];
   
 
-  const headChefUser = {
-    name: "Usuario",
-    lastName: "Prueba 5",
-    email: "usuario.p5@charlotte.com",
-    password: "SuperSeguraPassword",
-    birthDate: "2005-01-01",
-    dni: "V30000005",
-    isActive: true,
-  };
+  // const headChefUser = {
+  //   name: "Usuario",
+  //   lastName: "Prueba 5",
+  //   email: "usuario.p5@charlotte.com",
+  //   password: "SuperSeguraPassword",
+  //   birthDate: "2005-01-01",
+  //   dni: "V30000005",
+  //   isActive: true,
+  // };
 
+  // // await manageRoleAndUser(
+  // //   "Head Cheff",
+  // //   "Rol principal de cocina con gestión de inventario y personal",
+  // //   headChefPermissions,
+  // //   headChefUser
+  // // );
   // await manageRoleAndUser(
-  //   "Head Cheff",
-  //   "Rol principal de cocina con gestión de inventario y personal",
+  //   "Supervisor de cocina",
+  //   "",
   //   headChefPermissions,
   //   headChefUser
   // );
-  await manageRoleAndUser(
-    "Supervisor de cocina",
-    "",
-    headChefPermissions,
-    headChefUser
-  );
 
   // ---------------------------------------------------------
   // CASO 2: CHEF
