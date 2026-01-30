@@ -46,14 +46,23 @@ async function manageRoleAndUser(roleName, roleDescription, permissionsConfig, u
   }
 
   // 1. Crear o buscar el Rol
-  const role = await prisma.role.upsert({
+  let role = await prisma.role.findFirst({
     where: { name: roleName },
-    update: {}, // No modificamos si ya existe
-    create: {
-      name: roleName,
-      description: roleDescription,
-    },
   });
+
+  if (!role) {
+    // Si no existe, lo creamos
+    role = await prisma.role.create({
+      data: {
+        name: roleName,
+        description: roleDescription,
+      },
+    });
+    console.log(`✅ Rol '${role.name}' creado (ID: ${role.id}).`);
+  } else {
+    // Si existe, opcionalmente podrías actualizar la descripción
+    console.log(`✅ Rol '${role.name}' encontrado (ID: ${role.id}).`);
+  }
   console.log(`✅ Rol '${role.name}' gestionado (ID: ${role.id}).`);
 
   // 2. Limpiar permisos antiguos para evitar duplicados
