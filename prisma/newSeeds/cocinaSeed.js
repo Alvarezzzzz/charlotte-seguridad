@@ -358,7 +358,7 @@ async function main() {
   // Camarero
   const waiterPermissions = [
     {
-      resource: Resource.CocinaCamarero_view,
+      resource: Resource.CocinaMesero_view,
       methods: [Method.View] 
     },
   ];
@@ -380,7 +380,7 @@ async function main() {
   //   waiterUser
   // );
   await manageRoleAndUser(
-    "Camarero",
+    "Mesero",
     "",
     waiterPermissions,
     waiterUser
